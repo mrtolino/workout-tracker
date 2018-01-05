@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {onUpdateSet, onDeleteSet} from '../actions';
+import {updateSet, deleteSet} from '../actions';
 
 class ExerciseSet extends React.Component {
 
@@ -28,39 +28,43 @@ class ExerciseSet extends React.Component {
   }
 
   handleSubmit(event) {
-    this.props.onUpdateSet(this.props.workoutId, this.props.exerciseId, this.props.setId, this.state.weight, this.state.repetitions);
+    this.props.onUpdateSet(this.props.exerciseId, this.props.setId, this.state.weight, this.state.repetitions);
   }
 
   handleDelete(event) {
-    this.props.onDeleteSet(this.props.workoutId, this.props.exerciseId, this.props.setId, this.props.index);
+    this.props.onDeleteSet(this.props.exerciseId, this.props.setId, this.props.index);
   }
 
   render() {
     return (
-      <li>
-        <form onSubmit={this.handleSubmit}>
-          <label> {`Set ${this.props.index+1} -- `} </label>
-          <label>Weight: </label>
-          <input type="number" value={this.state.weight} onChange={this.handleWeightChange} />
-          <label> Repetitions: </label>
-          <input type="number" value={this.state.repetitions} onChange={this.handleRepetitionsChange} />
-          <input type="submit" value="Save" />
-          <input type="button" value="Delete" onClick={this.handleDelete} />
+      <li className='list-group-item'>
+        <form className='form-group' onSubmit={this.handleSubmit}>
+          <h4>{`Set ${this.props.index+1}`}</h4>
+          <label>Weight:</label>
+          <input className='form-control' type='number' name='weight' value={this.state.weight} onChange={this.handleWeightChange} />
+          <label>Repetitions:</label>
+          <input className='form-control' type='number' name='repetitions' value={this.state.repetitions} onChange={this.handleRepetitionsChange} />
+          <input className='btn btn-primary' type='submit' value='Save' />
+          <input className='btn btn-primary' type='button' value='Delete' onClick={this.handleDelete} />
         </form>
       </li>
     );
   }
 }
 
+const mapStateToProps = (state) => {
+  return {};
+};
+
 const mapDispatchToProps = (dispatch) => {
   return {
-    onUpdateSet: (workoutId, exerciseId, setId, weight, repetitions) => {
-      dispatch(updateSet(workoutId, exerciseId, setId, weight, repetitions))
+    onUpdateSet: (exerciseId, setId, weight, repetitions) => {
+      dispatch(updateSet(exerciseId, setId, weight, repetitions))
     },
-    onDeleteSet: (workoutId, exerciseId, setId, setArrayIndex) => {
-      dispatch(deleteSet(workoutId, exerciseId, setId, setArrayIndex))
+    onDeleteSet: (exerciseId, setId, setArrayIndex) => {
+      dispatch(deleteSet(exerciseId, setId, setArrayIndex))
     }
   }
 };
 
-export default connect(mapDispatchToProps)(ExerciseSet);
+export default connect(mapStateToProps, mapDispatchToProps)(ExerciseSet);

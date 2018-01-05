@@ -17,10 +17,10 @@ class WorkoutList extends React.Component {
 
   render() {
     return (
-      <div className='container'>
+      <div className='col-md-8'>
         <h1>Workout Tracking Application</h1>
-        <button onClick={this.props.onAddWorkout}>Add Workout</button>
-        <ul>
+        <button className='btn btn-primary' onClick={this.props.onAddWorkout}>Add Workout</button>
+        <ul className='list-group'>
           {
             this.props.workouts.map((workout, index) => (
               <Workout key={index} workout={workout} />

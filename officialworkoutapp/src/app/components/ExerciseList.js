@@ -21,21 +21,21 @@ class ExerciseList extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className='container'>
         <label>Exercise Name: </label>
 
         <input placeholder="Enter a name" ref={node => {
           this.exrcName = node;
         }} />
 
-        <button onClick={() => {
+        <button className='btn btn-primary' onClick={() => {
           this.props.onAddExercise(this.props.workoutId, this.exrcName.value)
           this.exrcName.value = '';
         }}>
           +
         </button>
 
-        <ul>
+        <ul className='list-group'>
           {this.props.exercises.map((exrc, index) => (
             <Exercise key={index} workoutId={this.props.workoutId} exrcIndex={index} exrc={exrc} />
           ))}

@@ -17,21 +17,21 @@ class Exercise extends React.Component {
 
   render() {
     return (
-      <li>
-        {`${this.props.exrc.name} `}
-        <button onClick={() => {
+      <li className='list-group-item'>
+        <h2>{`${this.props.exrc.name} `}</h2>
+        <button className='btn btn-primary' onClick={() => {
           this.props.onAddSet(this.props.exrc.id, 0, 0)
         }}>
           +
         </button>
 
-        <button onClick={() => {
+        <button className='btn btn-primary' onClick={() => {
           this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)
         }}>
           Delete Exercise
         </button>
 
-        <ul>
+        <ul className='list-group'>
           {this.props.exrc.exerciseSets.sort((set1, set2) => {
             return set1.id > set2.id;
           })
