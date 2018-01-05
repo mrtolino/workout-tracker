@@ -19,6 +19,10 @@ router.post('/addexercise', function(req, res, next) {
 });
 
 router.post('/addset', function(req, res, next) {
+  console.log(req.body.weight);
+  console.log(req.body.repetitions);
+  console.log(req.body.exerciseId);
+
   models.set.create({
     weight: req.body.weight,
     repetitions: req.body.repetitions,

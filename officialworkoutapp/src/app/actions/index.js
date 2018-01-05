@@ -1,6 +1,13 @@
 /*
  * action creators
  */
+const CLEAR_EXERCISES = 'CLEAR_EXERCISES';
+export const clearExercises = () => {
+    return {
+      type: CLEAR_EXERCISES
+    }
+};
+
 const REQUEST_EXERCISES = 'REQUEST_EXERCISES';
 const requestExercises = () => {
     return {
@@ -32,10 +39,9 @@ const requestSets = () => {
 }
 
 const RECEIVE_SETS = 'RECEIVE_SETS';
-const receiveSets = (json, workoutId, exerciseId) => {
+const receiveSets = (json, exerciseId) => {
   return {
     type: RECEIVE_SETS,
-    workoutId: workoutId,
     exerciseId: exerciseId,
     sets: json.map(child => {
       return {
@@ -89,7 +95,7 @@ export const updateSet = (workoutId, exerciseId, setId, weight, repetitions) => 
   }
 }
 
-export const fetchSets = (workoutId, exerciseId) => {
+export const fetchSets = (exerciseId) => {
   return (dispatch) => {
     dispatch(requestSets())
     return fetch('/api/sets',
@@ -103,7 +109,7 @@ export const fetchSets = (workoutId, exerciseId) => {
       }
     )
     .then(response => response.json())
-    .then(json => dispatch(receiveSets(json, workoutId, exerciseId)))
+    .then(json => dispatch(receiveSets(json, exerciseId)))
   }
 }
 
@@ -144,7 +150,7 @@ export const addExercise = (workoutId, name) => {
   }
 }
 
-export const addSet = (workoutId, exerciseId, weight, repetitions) => {
+export const addSet = (exerciseId, weight, repetitions) => {
   return (dispatch) => {
     dispatch(addSetRequest())
     return fetch('/api/addset',
@@ -160,11 +166,11 @@ export const addSet = (workoutId, exerciseId, weight, repetitions) => {
       }
     )
     .then(response => response.json())
-    .then(json => dispatch(addSetSuccess(json, workoutId, exerciseId)))
+    .then(json => dispatch(addSetSuccess(json, exerciseId)))
   }
 }
 
-export const deleteSet = (workoutId, exerciseId, setId, setArrayIndex) => {
+export const deleteSet = (exerciseId, setId, setArrayIndex) => {
   return (dispatch) => {
     dispatch(deleteSetRequest())
     return fetch('/api/deleteset',
@@ -179,11 +185,11 @@ export const deleteSet = (workoutId, exerciseId, setId, setArrayIndex) => {
       }
     )
     .then(response => response.json())
-    .then(json => dispatch(deleteSetSuccess(json, workoutId, exerciseId, setArrayIndex)))
+    .then(json => dispatch(deleteSetSuccess(json, exerciseId, setArrayIndex)))
   }
 }
 
-export const deleteExercise = (workoutId, exerciseId, exrcIndex) => {
+export const deleteExercise = (exerciseId, exrcIndex) => {
   return (dispatch) => {
     dispatch(deleteExerciseRequest())
     return fetch('/api/deleteexercise',
@@ -197,7 +203,7 @@ export const deleteExercise = (workoutId, exerciseId, exrcIndex) => {
       }
     )
     .then(response => response.json())
-    .then(json => dispatch(deleteExerciseSuccess(json, workoutId, exerciseId, exrcIndex)))
+    .then(json => dispatch(deleteExerciseSuccess(json, exerciseId, exrcIndex)))
   }
 }
 
@@ -209,10 +215,9 @@ const addSetRequest = () => {
 }
 
 const ADD_SET_SUCCESS = 'ADD_SET_SUCCESS';
-const addSetSuccess = (json, workoutId, exerciseId) => {
+const addSetSuccess = (json, exerciseId) => {
   return {
     type: ADD_SET_SUCCESS,
-    workoutId: workoutId,
     exerciseId: exerciseId,
     set: {
       id: json.id,
@@ -230,10 +235,9 @@ const deleteSetRequest = () => {
 }
 
 const DELETE_SET_SUCCESS = 'DELETE_SET_SUCCESS';
-const deleteSetSuccess = (json, workoutId, exerciseId, setArrayIndex) => {
+const deleteSetSuccess = (json, exerciseId, setArrayIndex) => {
   return {
     type: DELETE_SET_SUCCESS,
-    workoutId: workoutId,
     exerciseId: exerciseId,
     setArrayIndex: setArrayIndex
   }
@@ -269,10 +273,9 @@ const deleteExerciseRequest = () => {
 }
 
 const DELETE_EXERCISE_SUCCESS = 'DELETE_EXERCISE_SUCCESS';
-const deleteExerciseSuccess = (json, workoutId, exerciseId, exrcIndex) => {
+const deleteExerciseSuccess = (json, exerciseId, exrcIndex) => {
   return {
     type: DELETE_EXERCISE_SUCCESS,
-    workoutId: workoutId,
     exerciseId: exerciseId,
     exrcIndex: exrcIndex
   }

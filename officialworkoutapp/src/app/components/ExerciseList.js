@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import Exercise from './Exercise';
-import {addExercise, fetchExercises} from '../actions';
+import {addExercise, fetchExercises, clearExercises} from '../actions';
 
 class ExerciseList extends React.Component {
 
@@ -12,11 +12,11 @@ class ExerciseList extends React.Component {
   }
 
   componentDidMount() {
-    console.log("COMPONENT DID MOUNT", this.props.workoutId);
     this.props.onFetchExercises(this.props.workoutId);
-    /*this.props.exercises.forEach((exrc) => {
-      store.dispatch(fetchSets(exrc.id))
-    });*/
+  }
+
+  componentWillUnmount() {
+    this.props.onUnmount();
   }
 
   render() {
@@ -58,6 +58,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     onFetchExercises: (workoutId) => {
       dispatch(fetchExercises(workoutId))
+    },
+    onUnmount: () => {
+      dispatch(clearExercises())
     }
   }
 };

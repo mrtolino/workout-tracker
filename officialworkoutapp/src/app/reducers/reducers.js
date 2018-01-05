@@ -65,6 +65,9 @@ function exercises (state = [], action) {
     case 'ADD_SET_SUCCESS':
       return state.map(exrc => sets(exrc, action));
 
+    case 'CLEAR_EXERCISES':
+      return [];
+
     case 'DELETE_EXERCISE_REQUEST':
       return state;
 
