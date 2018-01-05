@@ -5,7 +5,7 @@ import {Link} from 'react-router-dom';
 const Workout = (props) => (
   <li>
     <Link to={`/exercises/${props.workout.id}`}>
-      {`Workout ${props.id} `}
+      {`Workout ${props.workout.id} `}
     </Link>
   </li>
 );

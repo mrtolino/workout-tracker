@@ -1,5 +1,7 @@
+import {combineReducers} from 'redux';
+
 //sets reducer
-export function sets (state = {}, action) {
+function sets (state = {}, action) {
   switch(action.type) {
     case 'RECEIVE_SETS':
       if (state.id !== action.exerciseId)
@@ -46,70 +48,43 @@ export function sets (state = {}, action) {
 };
 
 //exercises reducer
-export function exercises (state = {}, action) {
+function exercises (state = [], action) {
   switch(action.type) {
     case 'ADD_EXERCISE_REQUEST':
       return state;
 
     case 'ADD_EXERCISE_SUCCESS':
-      if (state.id !== action.workoutId)
-        return state;
-
-      return {
+      return [
         ...state,
-        exercises: [
-          ...state.exercises,
-          action.exercise
-        ]
-      };
+        action.exercise
+      ];
 
     case 'ADD_SET_REQUEST':
       return state;
 
     case 'ADD_SET_SUCCESS':
-      if (state.id !== action.workoutId)
-        return state;
-
-      return state.exercises.map(exrc => sets(exrc, action));
+      return state.map(exrc => sets(exrc, action));
 
     case 'DELETE_EXERCISE_REQUEST':
       return state;
 
     case 'DELETE_EXERCISE_SUCCESS':
-      if (state.id !== action.workoutId)
-        return state;
-
-      return {
-        ...state,
-        exercises: [
-          ...state.exercises.slice(0, action.exrcIndex),
-          ...state.exercises.slice(action.exrcIndex + 1)
-        ]
-      };
+      return [
+        ...state.slice(0, action.exrcIndex),
+        ...state.slice(action.exrcIndex + 1)
+      ];
 
     case 'DELETE_SET_SUCCESS':
-      if (state.id !== action.workoutId)
-        return state;
-
-      return state.exercises.map(exrc => sets(exrc, action));
+      return state.map(exrc => sets(exrc, action));
 
     case 'RECEIVE_EXERCISES':
-      if (state.id !== action.workoutId)
-        return state;
-
-      return {
-        ...state,
-        exercises: action.exercises
-      };
+      return action.exercises;
 
     case 'REQUEST_EXERCISES':
       return state;
 
     case 'RECEIVE_SETS':
-      if (state.id !== action.workoutId)
-        return state;
-
-      return state.exercises.map(exrc => sets(exrc, action));
+      return state.map(exrc => sets(exrc, action));
 
     case 'REQUEST_SETS':
       return state;
@@ -122,7 +97,7 @@ export function exercises (state = {}, action) {
   }
 };
 
-export function workouts (state = [], action) {
+function workouts (state = [], action) {
   switch(action.type) {
     case 'ADD_WORKOUT_REQUEST':
       return state;
@@ -136,30 +111,39 @@ export function workouts (state = [], action) {
     case 'FETCH_WORKOUTS_SUCCESS':
       return action.workouts;
 
-    case 'ADD_EXERCISE_REQUEST':
+    /*case 'ADD_EXERCISE_REQUEST':
       return state;
     case 'ADD_EXERCISE_SUCCESS':
-      return state.map(workout => exercises(workout, action));
-    case 'ADD_SET_REQUEST':
-      return state;
-    case 'ADD_SET_SUCCESS':
       return state.map(workout => exercises(workout, action));
     case 'DELETE_EXERCISE_REQUEST':
       return state;
     case 'DELETE_EXERCISE_SUCCESS':
       return state.map(workout => exercises(workout, action));
-    case 'DELETE_SET_SUCCESS':
-      return state.map(workout => exercises(workout, action));
     case 'RECEIVE_EXERCISES':
       return state.map(workout => exercises(workout, action));
     case 'REQUEST_EXERCISES':
       return state;
+    */
+    /*
+    case 'DELETE_SET_SUCCESS':
+      return state.map(workout => exercises(workout, action));
+    case 'ADD_SET_REQUEST':
+      return state;
+    case 'ADD_SET_SUCCESS':
+      return state.map(workout => exercises(workout, action));
     case 'RECEIVE_SETS':
       return state.map(workout => exercises(workout, action));
     case 'REQUEST_SETS':
-      return state;
+      return state;*/
 
     default:
       return state;
   }
 };
+
+const FitnessApp = combineReducers({
+  workouts,
+  exercises
+});
+
+export default FitnessApp;

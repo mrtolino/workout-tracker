@@ -1,5 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+
+import {onUpdateSet, onDeleteSet} from '../actions';
 
 class ExerciseSet extends React.Component {
 
@@ -49,4 +52,15 @@ class ExerciseSet extends React.Component {
   }
 }
 
-export default ExerciseSet;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onUpdateSet: (workoutId, exerciseId, setId, weight, repetitions) => {
+      dispatch(updateSet(workoutId, exerciseId, setId, weight, repetitions))
+    },
+    onDeleteSet: (workoutId, exerciseId, setId, setArrayIndex) => {
+      dispatch(deleteSet(workoutId, exerciseId, setId, setArrayIndex))
+    }
+  }
+};
+
+export default connect(mapDispatchToProps)(ExerciseSet);

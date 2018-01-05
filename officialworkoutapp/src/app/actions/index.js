@@ -10,6 +10,7 @@ const requestExercises = () => {
 
 const RECEIVE_EXERCISES = 'RECEIVE_EXERCISES';
 const receiveExercises = (json, workoutId) => {
+  console.log('RECEIVE EXERICSES', json);
   return {
     type: RECEIVE_EXERCISES,
     workoutId: workoutId,
@@ -295,6 +296,7 @@ const fetchWorkoutsRequest = () => {
 
 const FETCH_WORKOUTS_SUCCESS = 'FETCH_WORKOUTS_SUCCESS';
 const fetchWorkoutsSuccess = (json) => {
+  console.log("FETCH WORKOUTS SUCCESS: ", json);
   return {
     type: FETCH_WORKOUTS_SUCCESS,
     workouts: json.map((workout) => {

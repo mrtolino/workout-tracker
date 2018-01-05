@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ExerciseSet from './ExerciseSet';
+import {connect} from 'react-redux';
+
+import {deleteExercise, addSet, fetchSets} from '../actions';
 
 class Exercise extends React.Component {
 
@@ -29,24 +32,42 @@ class Exercise extends React.Component {
             Delete Exercise
           </button>
 
-          <ul>
+          {/*<ul>
             {this.props.exrc.exerciseSets.sort((set1, set2) => {
               return set1.id > set2.id;
             })
             .map((set, index) => (
               <ExerciseSet key={set.id} index={index} workoutId={this.props.workoutId} exerciseId={this.props.exrc.id} setId={set.id}
-                weight={set.weight} repetitions={set.repetitions} onUpdateSet={this.props.onUpdateSet} onDeleteSet={this.props.onDeleteSet} />
+                weight={set.weight} repetitions={set.repetitions} />
             ))}
-          </ul>
+          </ul>*/}
         </li>
       </div>
     );
   }
 }
 
+const mapStateToProps = (state) => {
+  return {};
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onDeleteExercise: (workoutId, exerciseId, exrcIndex) => {
+      dispatch(deleteExercise(workoutId, exerciseId, exrcIndex))
+    },
+    onAddSet: (workoutId, exerciseId, weight, repetitions) => {
+      dispatch(addSet(workoutId, exerciseId, weight, repetitions))
+    },
+    onFetchSets: (workoutId, exerciseId) => {
+      dispatch(fetchSets(workoutId, exerciseId))
+    }
+  };
+};
+
 /*Exercise.propTypes = {
   id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
 };*/
 
-export default Exercise;
+export default connect(mapStateToProps, mapDispatchToProps)(Exercise);

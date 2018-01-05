@@ -19,7 +19,6 @@ router.post('/addexercise', function(req, res, next) {
 });
 
 router.post('/addset', function(req, res, next) {
-  console.log(req.body);
   models.set.create({
     weight: req.body.weight,
     repetitions: req.body.repetitions,
@@ -86,7 +85,6 @@ router.post('/sets', function(req, res, next) {
       exerciseId: req.body.exerciseId
     }
   }).then(function(sets) {
-    console.log(sets);
     res.json(sets);
   });
 });

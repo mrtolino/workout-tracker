@@ -1,22 +1,35 @@
-var webpack = require('webpack');
-var path = require('path');
+var path = require("path");
 
-var BUILD_DIR = path.resolve(__dirname, 'src/client/public');
-var APP_DIR = path.resolve(__dirname, 'src/client/app');
+var DIST_DIR = path.resolve(__dirname, "dist");
+var SRC_DIR = path.resolve(__dirname, "src");
 
 var config = {
-
-  entry: APP_DIR + '/index.js',
+  entry: SRC_DIR + "/app/index.js",
   output: {
-    path: BUILD_DIR,
-    filename: 'bundle.js'
+    path: DIST_DIR + "/app",
+    filename: "bundle.js",
+    publicPath: "/app/"
   },
   module: {
-    rules: [
-      { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
+    loaders: [
+      {
+        test: /\.js$/,
+        include: SRC_DIR,
+        exclude: /node_modules/,
+        loader: "babel-loader",
+        query: {
+          presets: [
+            "react", "stage-2", "env"
+          ],
+          plugins: ["transform-object-rest-spread"]
+        }
+      }
     ]
   },
   devServer: {
+    historyApiFallback: {
+      index: 'index.html'
+    },
     proxy: {
       '/api/*': {
         target: 'http://localhost:3000',
