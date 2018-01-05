@@ -61,10 +61,9 @@ const updateSetRequest = () => {
 }
 
 const UPDATE_SET_SUCCESS = 'UPDATE_SET_SUCCESS';
-const updateSetSuccess = (json, workoutId, exerciseId) => {
+const updateSetSuccess = (json, exerciseId) => {
   return {
     type: UPDATE_SET_SUCCESS,
-    workoutId: workoutId,
     exerciseId: exerciseId,
     set: {
       id: json.id,
@@ -74,7 +73,7 @@ const updateSetSuccess = (json, workoutId, exerciseId) => {
   }
 }
 
-export const updateSet = (workoutId, exerciseId, setId, weight, repetitions) => {
+export const updateSet = (exerciseId, setId, weight, repetitions) => {
   return (dispatch) => {
     dispatch(updateSetRequest())
     return fetch('/api/updateset',
@@ -91,7 +90,7 @@ export const updateSet = (workoutId, exerciseId, setId, weight, repetitions) => 
       }
     )
     .then(response => response.json())
-    .then(json => dispatch(updateSetSuccess(json, workoutId, exerciseId)))
+    .then(json => dispatch(updateSetSuccess(json, exerciseId)))
   }
 }
 
