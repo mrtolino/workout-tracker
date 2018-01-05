@@ -28,25 +28,12 @@ const App = () => (
   <Router>
     <Switch>
       <Route exact path={'/'} component={WorkoutList} />
-      <Route path={'/exercises/:workoutId'} render={({match}) => {
-        console.log("IN ROUTE", match.params.workoutId);
-        return <ExerciseList workoutId={match.params.workoutId} />
-      }} />
+      <Route path={'/exercises/:workoutId'} render={({match}) => (
+        <ExerciseList workoutId={match.params.workoutId} />
+      )} />
     </Switch>
   </Router>
 );
-
-/*store.dispatch(fetchExercises())
-  .then(() => {
-    store.getState().exercises.forEach((exrc) => {
-      store.dispatch(fetchSets(exrc.id))
-    });
-  });
-*/
-
-//console.log("-----DISPATCHING ADD WORKOUT-----");
-//store.dispatch(addWorkout());
-store.dispatch(fetchWorkouts());
 
 render (
   <Provider store={store}>
