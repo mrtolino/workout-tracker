@@ -18,7 +18,7 @@ class Exercise extends React.Component {
   render() {
     return (
       <li className='list-group-item'>
-        <h2>{`${this.props.exrc.name} `}</h2>
+        <h2 className='exrc-name'>{`${this.props.exrc.name} `}</h2>
         <button className='btn btn-primary' onClick={() => {
           this.props.onAddSet(this.props.exrc.id, 0, 0)
         }}>
