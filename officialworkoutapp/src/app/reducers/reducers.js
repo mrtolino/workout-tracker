@@ -113,32 +113,6 @@ function workouts (state = [], action) {
       return state;
     case 'FETCH_WORKOUTS_SUCCESS':
       return action.workouts;
-
-    /*case 'ADD_EXERCISE_REQUEST':
-      return state;
-    case 'ADD_EXERCISE_SUCCESS':
-      return state.map(workout => exercises(workout, action));
-    case 'DELETE_EXERCISE_REQUEST':
-      return state;
-    case 'DELETE_EXERCISE_SUCCESS':
-      return state.map(workout => exercises(workout, action));
-    case 'RECEIVE_EXERCISES':
-      return state.map(workout => exercises(workout, action));
-    case 'REQUEST_EXERCISES':
-      return state;
-    */
-    /*
-    case 'DELETE_SET_SUCCESS':
-      return state.map(workout => exercises(workout, action));
-    case 'ADD_SET_REQUEST':
-      return state;
-    case 'ADD_SET_SUCCESS':
-      return state.map(workout => exercises(workout, action));
-    case 'RECEIVE_SETS':
-      return state.map(workout => exercises(workout, action));
-    case 'REQUEST_SETS':
-      return state;*/
-
     default:
       return state;
   }

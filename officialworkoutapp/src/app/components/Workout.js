@@ -5,8 +5,9 @@ import {Link} from 'react-router-dom';
 const Workout = (props) => (
   <li className='list-group-item'>
     <Link to={`/exercises/${props.workout.id}`}>
-      {`Workout ${props.workout.id} `}
+      <p>{`Workout ${props.workout.id} `}</p>
     </Link>
+    <p>{new Date(props.workout.date).toLocaleDateString('en-US')}</p>
   </li>
 );
 

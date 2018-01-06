@@ -27,7 +27,10 @@ const store = createStore(
 const App = () => (
   <Router>
     <Switch>
-      <Route exact path={'/'} component={WorkoutList} />
+      <Route exact path={'/'} render={() => (
+        <h1>Workout Tracker Home Page</h1>
+      )} />
+      <Route path={'/workoutlist'} component={WorkoutList} />
       <Route path={'/exercises/:workoutId'} render={({match}) => (
         <ExerciseList workoutId={match.params.workoutId} />
       )} />

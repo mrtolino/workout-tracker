@@ -24,7 +24,7 @@ class ExerciseList extends React.Component {
       <div className='container'>
         <label>Exercise Name: </label>
 
-        <input placeholder="Enter a name" ref={node => {
+        <input className='form-control input-xs' placeholder="Enter a name" ref={node => {
           this.exrcName = node;
         }} />
 

@@ -1,23 +1,43 @@
-/*
- * action creators
- */
+ /*
+  * Action type constants
+  */
 const CLEAR_EXERCISES = 'CLEAR_EXERCISES';
+const RECEIVE_EXERCISES = 'RECEIVE_EXERCISES';
+const REQUEST_EXERCISES = 'REQUEST_EXERCISES';
+const REQUEST_SETS = 'REQUEST_SETS';
+const RECEIVE_SETS = 'RECEIVE_SETS';
+const UPDATE_SET_REQUEST = 'UPDATE_SET_REQUEST';
+const UPDATE_SET_SUCCESS = 'UPDATE_SET_SUCCESS';
+const ADD_SET_REQUEST = 'ADD_SET_REQUEST';
+const ADD_SET_SUCCESS = 'ADD_SET_SUCCESS';
+const DELETE_SET_REQUEST = 'DELETE_SET_REQUEST';
+const DELETE_SET_SUCCESS = 'DELETE_SET_SUCCESS';
+const ADD_EXERCISE_REQUEST = 'ADD_EXERCISE_REQUEST';
+const ADD_EXERCISE_SUCCESS = 'ADD_EXERCISE_SUCCESS';
+const DELETE_EXERCISE_REQUEST = 'DELETE_EXERCISE_REQUEST';
+const DELETE_EXERCISE_SUCCESS = 'DELETE_EXERCISE_SUCCESS';
+const FETCH_WORKOUTS_REQUEST = 'FETCH_WORKOUTS_REQUEST';
+const FETCH_WORKOUTS_SUCCESS = 'FETCH_WORKOUTS_SUCCESS';
+const ADD_WORKOUT_REQUEST = 'ADD_WORKOUT_REQUEST';
+const ADD_WORKOUT_SUCCESS = 'ADD_WORKOUT_SUCCESS';
+
+/*
+ * Action creators
+ */
+
 export const clearExercises = () => {
     return {
       type: CLEAR_EXERCISES
     }
 };
 
-const REQUEST_EXERCISES = 'REQUEST_EXERCISES';
 const requestExercises = () => {
     return {
       type: REQUEST_EXERCISES
     }
 }
 
-const RECEIVE_EXERCISES = 'RECEIVE_EXERCISES';
 const receiveExercises = (json, workoutId) => {
-  console.log('RECEIVE EXERICSES', json);
   return {
     type: RECEIVE_EXERCISES,
     workoutId: workoutId,
@@ -31,14 +51,12 @@ const receiveExercises = (json, workoutId) => {
   }
 }
 
-const REQUEST_SETS = 'REQUEST_SETS';
 const requestSets = () => {
   return {
     type: REQUEST_SETS
   }
 }
 
-const RECEIVE_SETS = 'RECEIVE_SETS';
 const receiveSets = (json, exerciseId) => {
   return {
     type: RECEIVE_SETS,
@@ -53,14 +71,12 @@ const receiveSets = (json, exerciseId) => {
   }
 }
 
-const UPDATE_SET_REQUEST = 'UPDATE_SET_REQUEST';
 const updateSetRequest = () => {
   return {
     type: UPDATE_SET_REQUEST
   }
 }
 
-const UPDATE_SET_SUCCESS = 'UPDATE_SET_SUCCESS';
 const updateSetSuccess = (json, exerciseId) => {
   return {
     type: UPDATE_SET_SUCCESS,
@@ -72,6 +88,111 @@ const updateSetSuccess = (json, exerciseId) => {
     }
   }
 }
+
+const addSetRequest = () => {
+  return {
+    type: ADD_SET_REQUEST
+  }
+}
+
+const addSetSuccess = (json, exerciseId) => {
+  return {
+    type: ADD_SET_SUCCESS,
+    exerciseId: exerciseId,
+    set: {
+      id: json.id,
+      weight: json.weight,
+      repetitions: json.repetitions
+    }
+  }
+}
+
+const deleteSetRequest = () => {
+  return {
+    type: DELETE_SET_REQUEST
+  }
+}
+
+const deleteSetSuccess = (json, exerciseId, setArrayIndex) => {
+  return {
+    type: DELETE_SET_SUCCESS,
+    exerciseId: exerciseId,
+    setArrayIndex: setArrayIndex
+  }
+}
+
+const addExerciseRequest = (name, id) => {
+  return {
+    type: ADD_EXERCISE_REQUEST,
+    id: id,
+    name: name,
+  }
+}
+
+const addExerciseSuccess = (json, workoutId) => {
+  return {
+    type: ADD_EXERCISE_SUCCESS,
+    workoutId: workoutId,
+    exercise: {
+      id: json.id,
+      name: json.name,
+      exerciseSets: []
+    }
+  }
+}
+
+const deleteExerciseRequest = () => {
+  return {
+    type: DELETE_EXERCISE_REQUEST
+  }
+}
+
+const deleteExerciseSuccess = (json, exerciseId, exrcIndex) => {
+  return {
+    type: DELETE_EXERCISE_SUCCESS,
+    exerciseId: exerciseId,
+    exrcIndex: exrcIndex
+  }
+}
+
+const fetchWorkoutsRequest = () => {
+  return {
+    type: FETCH_WORKOUTS_REQUEST
+  }
+}
+
+const fetchWorkoutsSuccess = (json) => {
+  return {
+    type: FETCH_WORKOUTS_SUCCESS,
+    workouts: json.map((workout) => {
+      return {
+        id: workout.id,
+        date: workout.createdAt,
+        exercises: []
+      }
+    })
+  }
+}
+
+const addWorkoutRequest = () => {
+    return {
+      type: ADD_WORKOUT_REQUEST
+    }
+}
+
+const addWorkoutSuccess = (json) => {
+  return {
+    type: ADD_WORKOUT_SUCCESS,
+    workout: {
+      id: json.id,
+      exercises: []
+    }
+  }
+}
+
+/*
+ * Async action creators
+ */
 
 export const updateSet = (exerciseId, setId, weight, repetitions) => {
   return (dispatch) => {
@@ -206,79 +327,7 @@ export const deleteExercise = (exerciseId, exrcIndex) => {
   }
 }
 
-const ADD_SET_REQUEST = 'ADD_SET_REQUEST';
-const addSetRequest = () => {
-  return {
-    type: ADD_SET_REQUEST
-  }
-}
 
-const ADD_SET_SUCCESS = 'ADD_SET_SUCCESS';
-const addSetSuccess = (json, exerciseId) => {
-  return {
-    type: ADD_SET_SUCCESS,
-    exerciseId: exerciseId,
-    set: {
-      id: json.id,
-      weight: json.weight,
-      repetitions: json.repetitions
-    }
-  }
-}
-
-const DELETE_SET_REQUEST = 'DELETE_SET_REQUEST';
-const deleteSetRequest = () => {
-  return {
-    type: DELETE_SET_REQUEST
-  }
-}
-
-const DELETE_SET_SUCCESS = 'DELETE_SET_SUCCESS';
-const deleteSetSuccess = (json, exerciseId, setArrayIndex) => {
-  return {
-    type: DELETE_SET_SUCCESS,
-    exerciseId: exerciseId,
-    setArrayIndex: setArrayIndex
-  }
-}
-
-const ADD_EXERCISE_REQUEST = 'ADD_EXERCISE_REQUEST';
-const addExerciseRequest = (name, id) => {
-  return {
-    type: ADD_EXERCISE_REQUEST,
-    id: id,
-    name: name,
-  }
-}
-
-const ADD_EXERCISE_SUCCESS = 'ADD_EXERCISE_SUCCESS';
-const addExerciseSuccess = (json, workoutId) => {
-  return {
-    type: ADD_EXERCISE_SUCCESS,
-    workoutId: workoutId,
-    exercise: {
-      id: json.id,
-      name: json.name,
-      exerciseSets: []
-    }
-  }
-}
-
-const DELETE_EXERCISE_REQUEST = 'DELETE_EXERCISE_REQUEST';
-const deleteExerciseRequest = () => {
-  return {
-    type: DELETE_EXERCISE_REQUEST
-  }
-}
-
-const DELETE_EXERCISE_SUCCESS = 'DELETE_EXERCISE_SUCCESS';
-const deleteExerciseSuccess = (json, exerciseId, exrcIndex) => {
-  return {
-    type: DELETE_EXERCISE_SUCCESS,
-    exerciseId: exerciseId,
-    exrcIndex: exrcIndex
-  }
-}
 
 export const fetchWorkouts = () => {
   return (dispatch) => {
@@ -289,50 +338,11 @@ export const fetchWorkouts = () => {
   }
 }
 
-const FETCH_WORKOUTS_REQUEST = 'FETCH_WORKOUTS_REQUEST';
-const fetchWorkoutsRequest = () => {
-  return {
-    type: FETCH_WORKOUTS_REQUEST
-  }
-}
-
-const FETCH_WORKOUTS_SUCCESS = 'FETCH_WORKOUTS_SUCCESS';
-const fetchWorkoutsSuccess = (json) => {
-  console.log("FETCH WORKOUTS SUCCESS: ", json);
-  return {
-    type: FETCH_WORKOUTS_SUCCESS,
-    workouts: json.map((workout) => {
-      return {
-        id: workout.id,
-        exercises: []
-      }
-    })
-  }
-}
-
 export const addWorkout = () => {
   return (dispatch) => {
     dispatch(addWorkoutRequest())
     return fetch('/api/addworkout')
     .then(response => response.json())
     .then(json => dispatch(addWorkoutSuccess(json)))
-  }
-}
-
-const ADD_WORKOUT_REQUEST = 'ADD_WORKOUT_REQUEST';
-const addWorkoutRequest = () => {
-    return {
-      type: ADD_WORKOUT_REQUEST
-    }
-}
-
-const ADD_WORKOUT_SUCCESS = 'ADD_WORKOUT_SUCCESS';
-const addWorkoutSuccess = (json) => {
-  return {
-    type: ADD_WORKOUT_SUCCESS,
-    workout: {
-      id: json.id,
-      exercises: []
-    }
   }
 }
