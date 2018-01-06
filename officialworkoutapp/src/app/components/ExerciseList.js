@@ -32,7 +32,7 @@ class ExerciseList extends React.Component {
           this.props.onAddExercise(this.props.workoutId, this.exrcName.value)
           this.exrcName.value = '';
         }}>
-          +
+          Add Exercise
         </button>
 
         <ul className='list-group'>

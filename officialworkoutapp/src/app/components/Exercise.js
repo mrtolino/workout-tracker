@@ -22,13 +22,13 @@ class Exercise extends React.Component {
         <button className='btn btn-primary' onClick={() => {
           this.props.onAddSet(this.props.exrc.id, 0, 0)
         }}>
-          +
+          Add Set
         </button>
 
         <button className='btn btn-primary' onClick={() => {
           this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)
         }}>
-          Delete Exercise
+          Delete This Exercise
         </button>
 
         <ul className='list-group'>
