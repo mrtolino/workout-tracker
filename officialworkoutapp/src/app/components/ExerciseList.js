@@ -21,26 +21,31 @@ class ExerciseList extends React.Component {
 
   render() {
     return (
-      <div className='row justify-content-center'>
-        <div className='col-md-10'>
-          <label>Exercise Name: </label>
+      <div className='container'>
+        <div className='row justify-content-left'>
+          <div className='col-md-6'>
+            <h4>Exercise Name: </h4>
 
-          <input className='form-control input-xs' placeholder='Enter a name' ref={node => {
-            this.exrcName = node;
-          }} />
+            <input className='form-control' placeholder='Enter a name' ref={node => {
+              this.exrcName = node;
+            }} />
+            <button className='btn btn-primary' onClick={() => {
+              this.props.onAddExercise(this.props.workoutId, this.exrcName.value)
+              this.exrcName.value = '';
+            }}>
+              Add Exercise
+            </button>
+          </div>
+        </div>
 
-          <button className='btn btn-primary' onClick={() => {
-            this.props.onAddExercise(this.props.workoutId, this.exrcName.value)
-            this.exrcName.value = '';
-          }}>
-            Add Exercise
-          </button>
-
-          <ul className='list-group'>
-            {this.props.exercises.map((exrc, index) => (
-              <Exercise key={index} workoutId={this.props.workoutId} exrcIndex={index} exrc={exrc} />
-            ))}
-          </ul>
+        <div className='row justify-content-center'>
+          <div className='col-md-10'>
+            <ul className='list-group'>
+              {this.props.exercises.map((exrc, index) => (
+                <Exercise key={index} workoutId={this.props.workoutId} exrcIndex={index} exrc={exrc} />
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     );
