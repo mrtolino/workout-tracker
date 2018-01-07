@@ -20,8 +20,8 @@ router.post('/addexercise', function(req, res, next) {
 
 router.post('/addset', function(req, res, next) {
   models.set.create({
-    weight: req.sanitize(req.body.weight),
-    repetitions: req.sanitize(req.body.repetitions),
+    weight: Number(req.sanitize(String(req.body.weight))),
+    repetitions: Number(req.sanitize(String(req.body.repetitions))),
     exerciseId: req.sanitize(req.body.exerciseId)
   }).then(function(set) {
     res.json(set);
@@ -30,8 +30,8 @@ router.post('/addset', function(req, res, next) {
 
 router.post('/updateset', function(req, res, next) {
   models.set.update({
-    weight: req.sanitize(req.body.weight),
-    repetitions: req.sanitize(req.body.repetitions)
+    weight: Number(req.sanitize(String(req.body.weight))),
+    repetitions: Number(req.sanitize(String(req.body.repetitions)))
   }, {
     where: {
       id: req.sanitize(req.body.setId),
@@ -86,6 +86,38 @@ router.post('/sets', function(req, res, next) {
     }
   }).then(function(sets) {
     res.json(sets);
+  });
+});
+
+router.post('/deleteworkout', function(req, res, next) {
+  let workoutId = req.sanitize(req.body.workoutId);
+
+  models.exercise.findAll({
+    where: {
+      workoutId: workoutId
+    }
+  }).then(function(exrcs) {
+    exrcs.forEach((exrc) => {
+      models.set.destroy({
+        where: {
+          exerciseId: exrc.id
+        }
+      })
+    })
+  }).then(() => {
+    models.exercise.destroy({
+      where: {
+        workoutId: workoutId
+      }
+    })
+  }).then(() => {
+    models.workout.destroy({
+      where: {
+        id: workoutId
+      }
+    })
+  }).then(function() {
+    res.json('SUCCESS');
   });
 });
 
