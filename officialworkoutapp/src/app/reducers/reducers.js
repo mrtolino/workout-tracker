@@ -113,6 +113,13 @@ function workouts (state = [], action) {
       return state;
     case 'FETCH_WORKOUTS_SUCCESS':
       return action.workouts;
+    case 'DELETE_WORKOUT_REQUEST':
+      return state;
+    case 'DELETE_WORKOUT_SUCCESS':
+      return [
+        ...state.slice(0, action.workoutIndex),
+        ...state.slice(action.workoutIndex + 1)
+      ];
     default:
       return state;
   }

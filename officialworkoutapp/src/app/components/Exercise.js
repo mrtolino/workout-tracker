@@ -18,28 +18,40 @@ class Exercise extends React.Component {
   render() {
     return (
       <li className='list-group-item'>
-        <h2 className='exrc-name'>{`${this.props.exrc.name} `}</h2>
-        <button className='btn btn-primary' onClick={() => {
-          this.props.onAddSet(this.props.exrc.id, 0, 0)
-        }}>
-          Add Set
-        </button>
+        <div className='row'>
+          <div className='col'>
+            <h2 className='exrc-name float-left'>{`${this.props.exrc.name} `}</h2>
+            <button className='btn btn-danger float-right' onClick={() => {
+              this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)
+            }}>
+              ×
+            </button>
+          </div>
+        </div>
 
-        <button className='btn btn-primary' onClick={() => {
-          this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)
-        }}>
-          Delete This Exercise
-        </button>
+        <div className='row'>
+          <div className='col'>
+            <button className='btn btn-primary float-left' onClick={() => {
+              this.props.onAddSet(this.props.exrc.id, 0, 0)
+            }}>
+              Add Set
+            </button>
+          </div>
+        </div>
 
-        <ul className='list-group'>
-          {this.props.exrc.exerciseSets.sort((set1, set2) => {
-            return set1.id > set2.id;
-          })
-          .map((set, index) => (
-            <ExerciseSet key={set.id} index={index} workoutId={this.props.workoutId} exerciseId={this.props.exrc.id} setId={set.id}
-              weight={set.weight} repetitions={set.repetitions} />
-          ))}
-        </ul>
+        <div className='row'>
+          <div className='col'>
+            <ul className='list-group'>
+              {this.props.exrc.exerciseSets.sort((set1, set2) => {
+                return set1.id > set2.id;
+              })
+              .map((set, index) => (
+                <ExerciseSet key={set.id} index={index} workoutId={this.props.workoutId} exerciseId={this.props.exrc.id} setId={set.id}
+                  weight={set.weight} repetitions={set.repetitions} />
+              ))}
+            </ul>
+          </div>
+        </div>
       </li>
     );
   }

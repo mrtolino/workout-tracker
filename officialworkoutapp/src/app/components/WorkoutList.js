@@ -19,7 +19,7 @@ class WorkoutList extends React.Component {
     return (
       <div className='row justify-content-center'>
         <div className='col-md-8'>
-          <h1>Workout Tracking Application</h1>
+          <h1 className='title'>Workout Tracking Application</h1>
           <button className='btn btn-primary' onClick={this.props.onAddWorkout}>Add Workout</button>
           <ul className='list-group'>
             {

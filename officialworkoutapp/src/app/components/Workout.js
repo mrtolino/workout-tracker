@@ -4,10 +4,15 @@ import {Link} from 'react-router-dom';
 
 const Workout = (props) => (
   <li className='list-group-item'>
-    <Link to={`/exercises/${props.workout.id}`}>
-      <p>{`Workout ${props.workout.id} `}</p>
-    </Link>
-    <p>{new Date(props.workout.date).toLocaleDateString('en-US')}</p>
+    <div className='float-left'>
+      <Link to={`/exercises/${props.workout.id}`}>
+        <p>{`Workout ${props.workout.id} `}</p>
+      </Link>
+      <p>{new Date(props.workout.date).toLocaleDateString('en-US')}</p>
+    </div>
+    <div className='float-right'>
+      <button className='btn btn-danger'>Delete</button>
+    </div>
   </li>
 );
 
