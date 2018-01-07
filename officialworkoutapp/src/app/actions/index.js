@@ -16,6 +16,8 @@ const ADD_EXERCISE_REQUEST = 'ADD_EXERCISE_REQUEST';
 const ADD_EXERCISE_SUCCESS = 'ADD_EXERCISE_SUCCESS';
 const DELETE_EXERCISE_REQUEST = 'DELETE_EXERCISE_REQUEST';
 const DELETE_EXERCISE_SUCCESS = 'DELETE_EXERCISE_SUCCESS';
+const DELETE_WORKOUT_REQUEST = 'DELETE_WORKOUT_REQUEST';
+const DELETE_WORKOUT_SUCCESS = 'DELETE_WORKOUT_SUCCESS';
 const FETCH_WORKOUTS_REQUEST = 'FETCH_WORKOUTS_REQUEST';
 const FETCH_WORKOUTS_SUCCESS = 'FETCH_WORKOUTS_SUCCESS';
 const ADD_WORKOUT_REQUEST = 'ADD_WORKOUT_REQUEST';
@@ -152,6 +154,20 @@ const deleteExerciseSuccess = (json, exerciseId, exrcIndex) => {
     type: DELETE_EXERCISE_SUCCESS,
     exerciseId: exerciseId,
     exrcIndex: exrcIndex
+  }
+}
+
+const deleteWorkoutRequest = () => {
+  return {
+    type: DELETE_WORKOUT_REQUEST
+  }
+}
+
+const deleteWorkoutSuccess = (json, workoutId, workoutIndex) => {
+  return {
+    type: DELETE_WORKOUT_SUCCESS,
+    workoutId: workoutId,
+    workoutIndex: workoutIndex
   }
 }
 
@@ -327,7 +343,23 @@ export const deleteExercise = (exerciseId, exrcIndex) => {
   }
 }
 
-
+export const deleteWorkout = (workoutId, workoutIndex) => {
+  return (dispatch) => {
+    dispatch(deleteWorkoutRequest())
+    return fetch('/api/deleteworkout',
+      {
+        method: 'POST',
+        headers: new Headers({'content-type': 'application/json'}),
+        body: JSON.stringify({
+          type: 'DELETE_WORKOUT',
+          workoutId: workoutId
+        })
+      }
+    )
+    .then(response => response.json())
+    .then(json => dispatch(deleteWorkoutSuccess(json, workoutId, workoutIndex)))
+  }
+}
 
 export const fetchWorkouts = () => {
   return (dispatch) => {

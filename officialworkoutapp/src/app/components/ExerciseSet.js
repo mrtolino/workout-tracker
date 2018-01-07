@@ -9,9 +9,11 @@ class ExerciseSet extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      weight: props.weight,
-      repetitions: props.repetitions
+      weight: props.weight || 0,
+      repetitions: props.repetitions || 0
     };
+
+    console.log(this.props);
 
     this.handleWeightChange = this.handleWeightChange.bind(this);
     this.handleRepetitionsChange = this.handleRepetitionsChange.bind(this);

@@ -11,7 +11,10 @@ const Workout = (props) => (
       <p>{new Date(props.workout.date).toLocaleDateString('en-US')}</p>
     </div>
     <div className='float-right'>
-      <button className='btn btn-danger'>Delete</button>
+      <button className='btn btn-danger'
+        onClick={() => props.onDeleteWorkout(props.workout.id, props.workoutIndex)}>
+        Delete
+      </button>
     </div>
   </li>
 );

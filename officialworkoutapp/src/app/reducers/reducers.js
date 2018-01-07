@@ -116,6 +116,7 @@ function workouts (state = [], action) {
     case 'DELETE_WORKOUT_REQUEST':
       return state;
     case 'DELETE_WORKOUT_SUCCESS':
+      console.log("DELETE WORKOUT SUCCESS IN REDUCER");
       return [
         ...state.slice(0, action.workoutIndex),
         ...state.slice(action.workoutIndex + 1)

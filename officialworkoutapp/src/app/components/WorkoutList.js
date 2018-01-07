@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Workout from './Workout';
 import {connect} from 'react-redux';
 
-import {addWorkout, fetchWorkouts} from '../actions';
+import {addWorkout, fetchWorkouts, deleteWorkout} from '../actions';
 
 class WorkoutList extends React.Component {
 
@@ -24,7 +24,7 @@ class WorkoutList extends React.Component {
           <ul className='list-group'>
             {
               this.props.workouts.map((workout, index) => (
-                <Workout key={index} workout={workout} />
+                <Workout key={index} workout={workout} workoutIndex={index} onDeleteWorkout={this.props.onDeleteWorkout} />
               ))
             }
           </ul>
@@ -43,7 +43,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onAddWorkout: () => dispatch(addWorkout()),
-    onFetchWorkouts: () => dispatch(fetchWorkouts())
+    onFetchWorkouts: () => dispatch(fetchWorkouts()),
+    onDeleteWorkout: (workoutId, workoutIndex) => dispatch(deleteWorkout(workoutId, workoutIndex))
   };
 };
 
