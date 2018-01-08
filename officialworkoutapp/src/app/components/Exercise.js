@@ -21,6 +21,8 @@ class Exercise extends React.Component {
         <div className='row'>
           <div className='col'>
             <h2 className='exrc-name float-left'>{`${this.props.exrc.name} `}</h2>
+          </div>
+          <div className='col'>
             {/* <button className='btn btn-secondary float-left'>Collapse</button> */}
             <button className='btn btn-danger float-right' onClick={() => {
               this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)

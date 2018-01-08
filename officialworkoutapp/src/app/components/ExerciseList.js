@@ -26,7 +26,7 @@ class ExerciseList extends React.Component {
           <div className='col-md-6'>
             <h4>Exercise Name: </h4>
 
-            <input className='form-control' placeholder='Enter a name' ref={node => {
+            <input className='form-control' placeholder='Enter a name' maxLength='30' ref={node => {
               this.exrcName = node;
             }} />
             <button className='btn btn-primary' onClick={() => {
