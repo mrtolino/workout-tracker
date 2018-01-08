@@ -42,12 +42,18 @@ class ExerciseSet extends React.Component {
       <li className='list-group-item'>
         <div className='form-group'>
           <h4 className='set-number'>{`Set ${this.props.index+1}`}</h4>
-          <label>Weight:</label>
+          <label className='set-data'>Weight:</label>
           <input className='form-control' type='number' name='weight' value={this.state.weight} onChange={this.handleWeightChange} />
-          <label>Repetitions:</label>
+          <label className='set-data'>Repetitions:</label>
           <input className='form-control' type='number' name='repetitions' value={this.state.repetitions} onChange={this.handleRepetitionsChange} />
-          <div class='btn-center'><button className='btn btn-success float-left-custom' type='submit' onClick={this.handleSubmit}>Save</button></div>
-          <div class='btn-center'><button className='btn btn-danger float-right-custom' type='button' onClick={this.handleDelete}>Delete</button></div>
+          <div className='row'>
+            <div className='col'>
+              <button className='btn btn-success btn-block no-gutters' type='submit' onClick={this.handleSubmit}>Save</button>
+            </div>
+            <div className='col'>
+              <button className='btn btn-danger btn-block no-gutters' type='button' onClick={this.handleDelete}>Delete</button>
+            </div>
+          </div>
         </div>
       </li>
     );

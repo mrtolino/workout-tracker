@@ -19,12 +19,12 @@ class Exercise extends React.Component {
     return (
       <li className='list-group-item'>
         <div className='row'>
-          <div className='col'>
+          <div className='col-10'>
             <h2 className='exrc-name float-left'>{`${this.props.exrc.name} `}</h2>
           </div>
-          <div className='col'>
+          <div className='col-2'>
             {/* <button className='btn btn-secondary float-left'>Collapse</button> */}
-            <button className='btn btn-danger float-right' onClick={() => {
+            <button className='btn btn-danger float-right no-gutters' onClick={() => {
               this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)
             }}>
               ×
@@ -34,7 +34,7 @@ class Exercise extends React.Component {
 
         <div className='row'>
           <div className='col'>
-            <button className='btn btn-primary float-left' onClick={() => {
+            <button className='btn btn-primary float-left no-gutters' onClick={() => {
               this.props.onAddSet(this.props.exrc.id, 0, 0)
             }}>
               Add Set
@@ -44,7 +44,7 @@ class Exercise extends React.Component {
 
         <div className='row'>
           <div className='col'>
-            <ul className='list-group'>
+            <ul className='list-group no-gutters'>
               {this.props.exrc.exerciseSets.sort((set1, set2) => {
                 return set1.id > set2.id;
               })

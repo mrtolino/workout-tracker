@@ -201,6 +201,7 @@ const addWorkoutSuccess = (json) => {
     type: ADD_WORKOUT_SUCCESS,
     workout: {
       id: json.id,
+      date: json.createdAt,
       exercises: []
     }
   }
