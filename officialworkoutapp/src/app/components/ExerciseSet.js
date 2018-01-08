@@ -46,8 +46,8 @@ class ExerciseSet extends React.Component {
           <input className='form-control' type='number' name='weight' value={this.state.weight} onChange={this.handleWeightChange} />
           <label>Repetitions:</label>
           <input className='form-control' type='number' name='repetitions' value={this.state.repetitions} onChange={this.handleRepetitionsChange} />
-          <button className='btn btn-success' type='submit' onClick={this.handleSubmit}>Save</button>
-          <button className='btn btn-danger float-right' type='button' onClick={this.handleDelete}>Delete</button>
+          <div class='btn-center'><button className='btn btn-success float-left-custom' type='submit' onClick={this.handleSubmit}>Save</button></div>
+          <div class='btn-center'><button className='btn btn-danger float-right-custom' type='button' onClick={this.handleDelete}>Delete</button></div>
         </div>
       </li>
     );
