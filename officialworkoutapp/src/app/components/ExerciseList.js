@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 import Exercise from './Exercise';
@@ -22,6 +23,13 @@ class ExerciseList extends React.Component {
   render() {
     return (
       <div className='container'>
+        <div className='row justify-content-center'>
+          <div className='col-md-10'>
+            <Link to={'/workoutlist'}>
+              <button className='btn btn-primary no-gutters float-right'>Back to Workout List</button>
+            </Link>
+          </div>
+        </div>
         <div className='row justify-content-center'>
           <div className='col-md-10'>
             <h4 className='exrc-name-label'>Exercise Name: </h4>
