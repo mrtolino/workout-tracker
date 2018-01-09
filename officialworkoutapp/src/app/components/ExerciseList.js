@@ -26,7 +26,7 @@ class ExerciseList extends React.Component {
         <div className='row justify-content-center'>
           <div className='col-md-10'>
             <Link to={'/workoutlist'}>
-              <button className='btn btn-primary no-gutters float-right'>Back to Workout List</button>
+              <button className='btn btn-primary btn-margin-top no-gutters float-right'>Back to Workout List</button>
             </Link>
           </div>
         </div>
@@ -44,9 +44,11 @@ class ExerciseList extends React.Component {
         </div>
         <div className='row justify-content-center'>
           <div className='col-md-10'>
-            <button className='btn btn-primary no-gutters' onClick={() => {
-              this.props.onAddExercise(this.props.workoutId, this.exrcName.value)
-              this.exrcName.value = '';
+            <button className='btn btn-primary btn-margin-top no-gutters' onClick={() => {
+              if (this.exrcName.value !== '') {
+                this.props.onAddExercise(this.props.workoutId, this.exrcName.value)
+                this.exrcName.value = '';
+              }
             }}>
               Add Exercise
             </button>

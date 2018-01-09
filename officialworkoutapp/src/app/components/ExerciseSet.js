@@ -40,18 +40,19 @@ class ExerciseSet extends React.Component {
   render() {
     return (
       <li className='list-group-item'>
-        <div className='form-group'>
+        <div className='form-group has-success'>
           <h4 className='set-number'>{`Set ${this.props.index+1}`}</h4>
           <label className='set-data'>Weight:</label>
-          <input className='form-control' type='number' name='weight' value={this.state.weight} onChange={this.handleWeightChange} />
+          <input className='form-control form-control-success' type='number' name='weight' value={this.state.weight} onChange={this.handleWeightChange} />
           <label className='set-data'>Repetitions:</label>
-          <input className='form-control' type='number' name='repetitions' value={this.state.repetitions} onChange={this.handleRepetitionsChange} />
+          <input className='form-control form-control-success' type='number' name='repetitions'
+            value={this.state.repetitions} onChange={this.handleRepetitionsChange} />
           <div className='row'>
             <div className='col'>
-              <button className='btn btn-success btn-block no-gutters' type='submit' onClick={this.handleSubmit}>Save</button>
+              <button className='btn btn-success btn-block btn-margin-top no-gutters' type='submit' onClick={this.handleSubmit}>Save</button>
             </div>
             <div className='col'>
-              <button className='btn btn-danger btn-block no-gutters' type='button' onClick={this.handleDelete}>Delete</button>
+              <button className='btn btn-danger btn-block btn-margin-top no-gutters' type='button' onClick={this.handleDelete}>Delete</button>
             </div>
           </div>
         </div>
