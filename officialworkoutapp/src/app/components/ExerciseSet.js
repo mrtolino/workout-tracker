@@ -13,12 +13,14 @@ class ExerciseSet extends React.Component {
       repetitions: props.repetitions || 0
     };
 
-    console.log(this.props);
-
     this.handleWeightChange = this.handleWeightChange.bind(this);
     this.handleRepetitionsChange = this.handleRepetitionsChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+  }
+
+  componentWillUnmount() {
+    this.handleSubmit()
   }
 
   handleWeightChange(event) {
