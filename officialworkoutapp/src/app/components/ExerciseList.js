@@ -10,6 +10,9 @@ class ExerciseList extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      collapseAll: false
+    };
   }
 
   componentDidMount() {
