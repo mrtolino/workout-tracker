@@ -20,9 +20,38 @@ class ExerciseList extends React.Component {
     this.props.onUnmount();
   }
 
+  renderFooterExerciseNameInput() {
+    if (this.props.exercises.length > 0) {
+      return (
+        <div>
+          <div className='row justify-content-center'>
+            <div className='col-md-10'>
+              <input className='form-control input-margin-top' placeholder='Enter a name' maxLength='30' ref={node => {
+                this.footerExrcName = node;
+              }} />
+            </div>
+          </div>
+          <div className='row justify-content-center'>
+            <div className='col-md-10'>
+              <button className='btn btn-primary btn-margin-top no-gutters' onClick={() => {
+                if (this.footerExrcName.value !== '') {
+                  this.props.onAddExercise(this.props.workoutId, this.footerExrcName.value)
+                  this.footerExrcName.value = '';
+                }
+              }}>
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
+
   render() {
     return (
       <div className='container'>
+
         <div className='row justify-content-center'>
           <div className='col-md-10'>
             <Link to={'/workoutlist'}>
@@ -30,11 +59,13 @@ class ExerciseList extends React.Component {
             </Link>
           </div>
         </div>
+
         <div className='row justify-content-center'>
           <div className='col-md-10'>
             <h4 className='exrc-name-label'>Exercise Name: </h4>
           </div>
         </div>
+
         <div className='row justify-content-center'>
           <div className='col-md-10'>
             <input className='form-control' placeholder='Enter a name' maxLength='30' ref={node => {
@@ -42,6 +73,7 @@ class ExerciseList extends React.Component {
             }} />
           </div>
         </div>
+
         <div className='row justify-content-center'>
           <div className='col-md-10'>
             <button className='btn btn-primary btn-margin-top no-gutters' onClick={() => {
@@ -64,6 +96,9 @@ class ExerciseList extends React.Component {
             </ul>
           </div>
         </div>
+
+        {this.renderFooterExerciseNameInput()}
+
       </div>
     );
   }
