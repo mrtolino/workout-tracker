@@ -39,7 +39,7 @@ class ExerciseList extends React.Component {
                   this.footerExrcName.value = '';
                 }
               }}>
-                Add
+                Add Exercise
               </button>
             </div>
           </div>
