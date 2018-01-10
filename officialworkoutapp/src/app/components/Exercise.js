@@ -45,7 +45,7 @@ class Exercise extends React.Component {
                   return set1.id > set2.id;
                 })
                 .map((set, index) => (
-                  <ExerciseSet key={set.id} index={index} workoutId={this.props.workoutId} exerciseId={this.props.exrc.id} setId={set.id}
+                  <ExerciseSet key={index} index={index} workoutId={this.props.workoutId} exerciseId={this.props.exrc.id} setId={set.id}
                     weight={set.weight} repetitions={set.repetitions} />
                 ))}
             </ul>

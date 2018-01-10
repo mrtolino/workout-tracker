@@ -9,8 +9,9 @@ class ExerciseSet extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      weight: props.weight || 0,
-      repetitions: props.repetitions || 0
+      weight: props.weight,
+      repetitions: props.repetitions,
+      updateSetOnUnmount: true
     };
 
     this.handleWeightChange = this.handleWeightChange.bind(this);
@@ -20,7 +21,8 @@ class ExerciseSet extends React.Component {
   }
 
   componentWillUnmount() {
-    this.handleSubmit()
+    if (this.state.updateSetOnUnmount)
+      this.handleSubmit()
   }
 
   handleWeightChange(event) {
@@ -32,10 +34,13 @@ class ExerciseSet extends React.Component {
   }
 
   handleSubmit(event) {
-    this.props.onUpdateSet(this.props.exerciseId, this.props.setId, this.state.weight, this.state.repetitions);
+    this.props.onUpdateSet(this.props.exerciseId, this.props.index, this.props.setId, this.state.weight, this.state.repetitions);
   }
 
   handleDelete(event) {
+    this.setState({
+      updateSetOnUnmount: false
+    });
     this.props.onDeleteSet(this.props.exerciseId, this.props.setId, this.props.index);
   }
 
@@ -52,7 +57,7 @@ class ExerciseSet extends React.Component {
             value={this.state.repetitions} min='0' onChange={this.handleRepetitionsChange} />
           <div className='row'>
             <div className='col'>
-              <button className='btn btn-success btn-block btn-margin-top no-gutters' type='submit' onClick={this.handleSubmit}>Save</button>
+              <button className='btn btn-success btn-block btn-margin-top no-gutters' type='button' onClick={this.handleSubmit}>Save</button>
             </div>
             <div className='col'>
               <button className='btn btn-danger btn-block btn-margin-top no-gutters' type='button' onClick={this.handleDelete}>Delete</button>
@@ -70,8 +75,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onUpdateSet: (exerciseId, setId, weight, repetitions) => {
-      dispatch(updateSet(exerciseId, setId, weight, repetitions))
+    onUpdateSet: (exerciseId, setArrayIndex, setId, weight, repetitions) => {
+      dispatch(updateSet(exerciseId, setArrayIndex, setId, weight, repetitions))
     },
     onDeleteSet: (exerciseId, setId, setArrayIndex) => {
       dispatch(deleteSet(exerciseId, setId, setArrayIndex))

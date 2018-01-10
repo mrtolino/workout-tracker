@@ -28,7 +28,16 @@ function sets (state = {}, action) {
       if (state.id !== action.exerciseId)
         return state;
 
-      return state;
+      console.log(action.set);
+
+      return {
+        ...state,
+        exerciseSets: [
+          ...state.exerciseSets.slice(0, action.setArrayIndex),
+          action.set,
+          ...state.exerciseSets.slice(action.setArrayIndex + 1)
+        ]
+      }
 
     case 'DELETE_SET_SUCCESS':
       if (state.id !== action.exerciseId)
@@ -77,6 +86,8 @@ function exercises (state = [], action) {
         ...state.slice(action.exrcIndex + 1)
       ];
 
+    case 'DELETE_SET_REQUEST':
+      return state;
     case 'DELETE_SET_SUCCESS':
       return state.map(exrc => sets(exrc, action));
 
@@ -91,10 +102,10 @@ function exercises (state = [], action) {
 
     case 'REQUEST_SETS':
       return state;
-    /*case 'UPDATE_SET_REQUEST':
-      return state;*/
-    /*case 'UPDATE_SET_SUCCESS':
-      return state.map(exrc => sets(exrc, action));*/
+    case 'UPDATE_SET_REQUEST':
+      return state;
+    case 'UPDATE_SET_SUCCESS':
+      return state.map(exrc => sets(exrc, action));
     default:
       return state;
   }

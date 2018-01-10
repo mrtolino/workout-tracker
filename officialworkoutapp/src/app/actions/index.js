@@ -79,14 +79,15 @@ const updateSetRequest = () => {
   }
 }
 
-const updateSetSuccess = (json, exerciseId) => {
+const updateSetSuccess = (set, exerciseId, setArrayIndex) => {
   return {
     type: UPDATE_SET_SUCCESS,
     exerciseId: exerciseId,
+    setArrayIndex: setArrayIndex,
     set: {
-      id: json.id,
-      weight: json.weight,
-      repetitions: json.repetitions
+      id: set.id,
+      weight: set.weight,
+      repetitions: set.repetitions
     }
   }
 }
@@ -211,7 +212,7 @@ const addWorkoutSuccess = (json) => {
  * Async action creators
  */
 
-export const updateSet = (exerciseId, setId, weight, repetitions) => {
+export const updateSet = (exerciseId, setArrayIndex, setId, weight, repetitions) => {
   return (dispatch) => {
     dispatch(updateSetRequest())
     return fetch('/api/updateset',
@@ -228,7 +229,13 @@ export const updateSet = (exerciseId, setId, weight, repetitions) => {
       }
     )
     .then(response => response.json())
-    .then(json => dispatch(updateSetSuccess(json, exerciseId)))
+    .then(json => { //TODO: Check if JSON response is successful or not
+      dispatch(updateSetSuccess({
+        id: setId,
+        weight: weight,
+        repetitions: repetitions
+      }, exerciseId, setArrayIndex))
+    })
   }
 }
 
