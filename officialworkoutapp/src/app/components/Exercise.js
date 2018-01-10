@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ExerciseSet from './ExerciseSet';
 import {connect} from 'react-redux';
+// import Confirm from 'react-confirm-bootstrap';
 
 import {deleteExercise, addSet, fetchSets} from '../actions';
 
@@ -11,8 +12,12 @@ class Exercise extends React.Component {
     super(props);
     this.state = {
       collapse: false,
-      collapseText: 'Collapse'
+      collapseText: 'Collapse',
+      renderConfirmationModal: false
     };
+
+    this.onCloseConfirmationModal = this.onCloseConfirmationModal.bind(this);
+    this.onConfirmDelete = this.onConfirmDelete.bind(this);
   }
 
   componentDidMount() {
@@ -33,6 +38,30 @@ class Exercise extends React.Component {
       collapse: !this.state.collapse,
       collapseText: toggleCollapseText
     })
+  }
+
+  onConfirmDelete() {
+    this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)
+  }
+  onCloseConfirmationModal() {
+    this.setState({
+      renderConfirmationModal: false
+    })
+  }
+
+  renderConfirmationModal() {
+    if (this.state.renderConfirmationModal) {
+      return (
+        <Confirm
+          onConfirm={this.onConfirmDelete}
+          onClose={this.onCloseConfirmationModal}
+          body="Are you sure you want to delete this?"
+          confirmText="Confirm Delete"
+          title="Deleting Stuff">
+          <button>Delete Stuff</button>
+        </Confirm>
+      );
+    }
   }
 
   renderExerciseSets() {
@@ -66,12 +95,20 @@ class Exercise extends React.Component {
           <div className='col-2'>
             <button className='btn btn-danger float-right no-gutters' onClick={() => {
               this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)
+              // this.setState({
+              //   renderConfirmationModal: true
+              // })
             }}>
               ×
             </button>
           </div>
         </div>
 
+        {/* <div className='row'>
+          <div className='col'>
+            {this.renderConfirmationModal()}
+          </div>
+        </div> */}
         <div className='row'>
           <div className='col'>
             <button className='btn btn-primary float-left no-gutters' onClick={() => {

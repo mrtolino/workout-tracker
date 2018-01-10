@@ -8,10 +8,12 @@ class ExerciseSet extends React.Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       weight: props.weight,
       repetitions: props.repetitions,
-      updateSetOnUnmount: true
+      setSaved: true,
+      setBeingDeleted: false
     };
 
     this.handleWeightChange = this.handleWeightChange.bind(this);
@@ -20,26 +22,44 @@ class ExerciseSet extends React.Component {
     this.handleDelete = this.handleDelete.bind(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.state.weight !== nextProps.weight || this.state.repetitions !== nextProps.repetitions) {
+      this.setState({
+        weight: nextProps.weight,
+        repetitions: nextProps.repetitions
+      })
+    }
+  }
+
   componentWillUnmount() {
-    if (this.state.updateSetOnUnmount)
+    if (!this.state.setBeingDeleted && !this.state.setSaved)
       this.handleSubmit()
   }
 
   handleWeightChange(event) {
-    this.setState({weight: event.target.value});
+    this.setState({
+      weight: event.target.value,
+      setSaved: false
+    });
   }
 
   handleRepetitionsChange(event) {
-    this.setState({repetitions: event.target.value});
+    this.setState({
+      repetitions: event.target.value,
+      setSaved: false
+    });
   }
 
   handleSubmit(event) {
     this.props.onUpdateSet(this.props.exerciseId, this.props.index, this.props.setId, this.state.weight, this.state.repetitions);
+    this.setState({
+      setSaved: true
+    });
   }
 
   handleDelete(event) {
     this.setState({
-      updateSetOnUnmount: false
+      setBeingDeleted: true
     });
     this.props.onDeleteSet(this.props.exerciseId, this.props.setId, this.props.index);
   }
@@ -77,7 +97,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onUpdateSet: (exerciseId, setArrayIndex, setId, weight, repetitions) => {
       dispatch(updateSet(exerciseId, setArrayIndex, setId, weight, repetitions))
-    },
+    }
+    ,
     onDeleteSet: (exerciseId, setId, setArrayIndex) => {
       dispatch(deleteSet(exerciseId, setId, setArrayIndex))
     }

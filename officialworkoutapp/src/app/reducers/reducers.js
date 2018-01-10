@@ -28,8 +28,6 @@ function sets (state = {}, action) {
       if (state.id !== action.exerciseId)
         return state;
 
-      console.log(action.set);
-
       return {
         ...state,
         exerciseSets: [
