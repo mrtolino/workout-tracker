@@ -24,6 +24,13 @@ class Exercise extends React.Component {
     this.props.onFetchSets(this.props.exrc.id);
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      collapse: 'false',
+      collapseText: 'Collapse'
+    })
+  }
+
   toggleCollapse() {
     let toggleCollapseText;
     if (this.props.exrc.exerciseSets.length === 0)
