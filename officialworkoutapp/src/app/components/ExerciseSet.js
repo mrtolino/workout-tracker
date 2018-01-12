@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
 import {updateSet, deleteSet} from '../actions';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 class ExerciseSet extends React.Component {
 
@@ -13,13 +14,15 @@ class ExerciseSet extends React.Component {
       weight: props.weight,
       repetitions: props.repetitions,
       setSaved: true,
-      setBeingDeleted: false
+      setBeingDeleted: false,
+      renderConfirmationModal: false
     };
 
     this.handleWeightChange = this.handleWeightChange.bind(this);
     this.handleRepetitionsChange = this.handleRepetitionsChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
+    this.onCloseConfirmationModal = this.onCloseConfirmationModal.bind(this);
+    this.onConfirmDelete = this.onConfirmDelete.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -50,18 +53,23 @@ class ExerciseSet extends React.Component {
     });
   }
 
-  handleSubmit(event) {
+  handleSubmit() {
     this.props.onUpdateSet(this.props.exerciseId, this.props.index, this.props.setId, this.state.weight, this.state.repetitions);
     this.setState({
       setSaved: true
     });
   }
 
-  handleDelete(event) {
+  onConfirmDelete() {
     this.setState({
       setBeingDeleted: true
     });
     this.props.onDeleteSet(this.props.exerciseId, this.props.setId, this.props.index);
+    this.onCloseConfirmationModal();
+  }
+
+  onCloseConfirmationModal() {
+    this.setState({renderConfirmationModal: false});
   }
 
   render() {
@@ -80,10 +88,20 @@ class ExerciseSet extends React.Component {
               <button className='btn btn-success btn-block btn-margin-top no-gutters' type='button' onClick={this.handleSubmit}>Save</button>
             </div>
             <div className='col'>
-              <button className='btn btn-danger btn-block btn-margin-top no-gutters' type='button' onClick={this.handleDelete}>Delete</button>
+              <button className='btn btn-danger btn-block btn-margin-top no-gutters' type='button'
+                onClick={() => this.setState({renderConfirmationModal: true})}>
+                Delete
+              </button>
             </div>
           </div>
         </div>
+
+        <DeleteConfirmationModal
+          renderConfirmationModal={this.state.renderConfirmationModal}
+          onCloseConfirmationModal={this.onCloseConfirmationModal}
+          onConfirmDelete={this.onConfirmDelete}
+        />
+
       </li>
     );
   }

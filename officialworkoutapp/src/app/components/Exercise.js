@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ExerciseSet from './ExerciseSet';
 import {connect} from 'react-redux';
-// import Confirm from 'react-confirm-bootstrap';
 
 import {deleteExercise, addSet, fetchSets} from '../actions';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 class Exercise extends React.Component {
 
@@ -25,10 +25,7 @@ class Exercise extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({
-      collapse: 'false',
-      collapseText: 'Collapse'
-    })
+    this.setState({collapse: false, collapseText: 'Collapse'})
   }
 
   toggleCollapse() {
@@ -48,27 +45,12 @@ class Exercise extends React.Component {
   }
 
   onConfirmDelete() {
-    this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)
-  }
-  onCloseConfirmationModal() {
-    this.setState({
-      renderConfirmationModal: false
-    })
+    this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex);
+    this.onCloseConfirmationModal();
   }
 
-  renderConfirmationModal() {
-    if (this.state.renderConfirmationModal) {
-      return (
-        <Confirm
-          onConfirm={this.onConfirmDelete}
-          onClose={this.onCloseConfirmationModal}
-          body="Are you sure you want to delete this?"
-          confirmText="Confirm Delete"
-          title="Deleting Stuff">
-          <button>Delete Stuff</button>
-        </Confirm>
-      );
-    }
+  onCloseConfirmationModal() {
+    this.setState({renderConfirmationModal: false});
   }
 
   renderExerciseSets() {
@@ -77,13 +59,10 @@ class Exercise extends React.Component {
         <div className='row'>
           <div className='col'>
             <ul className='list-group no-gutters'>
-                {this.props.exrc.exerciseSets.sort((set1, set2) => {
-                  return set1.id > set2.id;
-                })
-                .map((set, index) => (
-                  <ExerciseSet key={index} index={index} workoutId={this.props.workoutId} exerciseId={this.props.exrc.id} setId={set.id}
-                    weight={set.weight} repetitions={set.repetitions} />
-                ))}
+              {this.props.exrc.exerciseSets.sort((set1, set2) => {
+                return set1.id > set2.id;
+              }).map((set, index) => (<ExerciseSet key={index} index={index} workoutId={this.props.workoutId}
+                exerciseId={this.props.exrc.id} setId={set.id} weight={set.weight} repetitions={set.repetitions}/>))}
             </ul>
           </div>
         </div>
@@ -101,21 +80,13 @@ class Exercise extends React.Component {
           </div>
           <div className='col-2'>
             <button className='btn btn-danger float-right no-gutters' onClick={() => {
-              this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex)
-              // this.setState({
-              //   renderConfirmationModal: true
-              // })
-            }}>
+                this.setState({renderConfirmationModal: true})
+              }}>
               ×
             </button>
           </div>
         </div>
 
-        {/* <div className='row'>
-          <div className='col'>
-            {this.renderConfirmationModal()}
-          </div>
-        </div> */}
         <div className='row'>
           <div className='col'>
             <button className='btn btn-primary float-left no-gutters' onClick={() => {
@@ -131,13 +102,18 @@ class Exercise extends React.Component {
           </div>
         </div>
 
+        <DeleteConfirmationModal
+          renderConfirmationModal={this.state.renderConfirmationModal}
+          onCloseConfirmationModal={this.onCloseConfirmationModal}
+          onConfirmDelete={this.onConfirmDelete}
+        />
+
         {this.renderExerciseSets()}
 
       </li>
     );
   }
 }
-
 
 const mapStateToProps = (state) => {
   return {};

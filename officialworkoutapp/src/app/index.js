@@ -28,11 +28,15 @@ const App = () => (
   <Router>
     <Switch>
       <Route exact path={'/'} render={() => (
-        <h1>Workout Tracker Home Page</h1>
+        <div>
+          <h1>Workout Tracker Home Page</h1>
+        </div>
       )} />
       <Route path={'/workoutlist'} component={WorkoutList} />
       <Route path={'/exercises/:workoutId'} render={({match}) => (
-        <ExerciseList workoutId={match.params.workoutId} />
+        <div id='exerciselist'>
+          <ExerciseList workoutId={match.params.workoutId} />
+        </div>
       )} />
     </Switch>
   </Router>
