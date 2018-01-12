@@ -25,7 +25,11 @@ class Exercise extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({collapse: false, collapseText: 'Collapse'})
+    if (this.state.collapse && nextProps.exrc.exerciseSets.length > 0)
+      this.setState({collapse: this.state.collapse, collapseText: this.state.collapseText});
+    else {
+      this.setState({collapse: false, collapseText: 'Collapse'});
+    }
   }
 
   toggleCollapse() {
