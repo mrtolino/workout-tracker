@@ -134,7 +134,26 @@ function workouts (state = [], action) {
   }
 };
 
+function user (state = {}, action) {
+  switch(action.type) {
+    case 'LOGIN_AUTH_REQUEST':
+      return state;
+    case 'LOGIN_AUTH_SUCCESS':
+      return {
+        username: action.username,
+        token: action.token
+      };
+    case 'CHANGE_PASSWORD_REQUEST': //potential add-on for later
+      return state;
+    case 'CHANGE_PASSWORD_SUCCESS': //potential add-on for later
+      return state;
+    default:
+      return state;
+  }
+};
+
 const FitnessApp = combineReducers({
+  user,
   workouts,
   exercises
 });

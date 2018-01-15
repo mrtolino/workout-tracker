@@ -1,9 +1,83 @@
 var models = require('../models/index');
 var express = require('express');
+var _ = require('lodash');
+var jwt = require('jsonwebtoken');
+var passport = require('passport');
+var passportJWT = require('passport-jwt');
+var bcrypt = require('bcrypt');
+
+var ExtractJwt = passportJWT.ExtractJwt;
+var JwtStrategy = passportJWT.Strategy;
 var router = express.Router();
 
-router.get('/addworkout', function(req, res, next) {
-  models.workout.create({})
+let jwtOptions = {};
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
+jwtOptions.secretOrKey = 'tasmanianDevil';
+
+let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, done) {
+  console.log('payload received', jwt_payload);
+  models.user.findOne({
+    where: {
+      username: jwt_payload.username
+    }
+  }).then(function(user) {
+    console.log("IN HERE!!!!!!!");
+    if (user) {
+      done(null, user);
+    } else {
+      done(null, false);
+    }
+  });
+});
+passport.use(strategy);
+
+router.post('/createaccount', function(req, res, next) {
+  const saltRounds = 10;
+  if (req.body.username && req.body.password) {
+    bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+      if (hash) {
+        models.user.create({
+          username: req.body.username,
+          password: hash,
+          fname: req.body.fname,
+          lname: req.body.lname
+        }).then(function(user) {
+          res.json(user);
+        })
+      }
+    });
+  }
+});
+
+router.post('/login', function(req, res, next) {
+  if (req.body.username && req.body.password) {
+    models.user.findOne({
+      where: {
+        username: req.body.username
+      }
+    }).then(function(user) {
+      if (user) {
+        bcrypt.compare(req.body.password, user.password)
+        .then(function(result) {
+          if (result === true) {
+            var payload = {username: user.username};
+            var token = jwt.sign(payload, jwtOptions.secretOrKey);
+            res.status(200).json({message: 'ok', token: token});
+          } else {
+            res.status(401).json('Invalid credentials.');
+          }
+        });
+      } else {
+        res.status(401).json('Invalid credentials.');
+      }
+    })
+  }
+});
+
+router.get('/addworkout', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.create({
+    userId: req.user.id
+  })
   .then(function(workout) {
     res.json(workout);
   });
@@ -121,8 +195,12 @@ router.post('/deleteworkout', function(req, res, next) {
   });
 });
 
-router.get('/workouts', function(req, res, next) {
-  models.workout.findAll({}).then(function(workouts) {
+router.get('/workouts', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.findAll({
+    where: {
+      userId: req.user.id
+    }
+  }).then(function(workouts) {
     res.json(workouts);
   });
 });

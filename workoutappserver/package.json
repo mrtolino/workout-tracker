@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "body-parser": "~1.18.2",
     "compression": "^1.7.1",
     "cookie-parser": "~1.4.3",
@@ -14,11 +15,15 @@
     "express-sanitizer": "^1.0.2",
     "helmet": "^3.9.0",
     "jade": "~1.11.0",
+    "jsonwebtoken": "^8.1.0",
+    "lodash": "^4.17.4",
     "morgan": "~1.9.0",
     "node-uuid": "^1.4.8",
+    "passport": "^0.4.0",
+    "passport-jwt": "^3.0.1",
     "pg": "^7.4.0",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^4.22.6",
+    "sequelize": "^4.31.0",
     "sequelize-cli": "^3.0.0",
     "serve-favicon": "~2.4.5",
     "uuid": "^3.1.0"

@@ -19,6 +19,7 @@
     "expect": "^21.2.1",
     "node-uuid": "^1.4.8",
     "react": "^16.1.1",
+    "react-cookie": "^2.1.2",
     "react-dom": "^16.1.1",
     "react-modal": "^3.1.10",
     "react-redux": "^5.0.6",

@@ -22,6 +22,12 @@ const FETCH_WORKOUTS_REQUEST = 'FETCH_WORKOUTS_REQUEST';
 const FETCH_WORKOUTS_SUCCESS = 'FETCH_WORKOUTS_SUCCESS';
 const ADD_WORKOUT_REQUEST = 'ADD_WORKOUT_REQUEST';
 const ADD_WORKOUT_SUCCESS = 'ADD_WORKOUT_SUCCESS';
+const LOGIN_AUTH_REQUEST = 'LOGIN_AUTH_REQUEST';
+const LOGIN_AUTH_SUCCESS = 'LOGIN_AUTH_SUCCESS';
+const LOGIN_AUTH_FAILURE = 'LOGIN_AUTH_FAILURE';
+const CREATE_ACCOUNT_REQUEST = 'CREATE_ACCOUNT_REQUEST';
+const CREATE_ACCOUNT_SUCCESS = 'CREATE_ACCOUNT_SUCCESS';
+const CREATE_ACCOUNT_FAILURE = 'CREATE_ACCOUNT_FAILURE';
 
 /*
  * Action creators
@@ -208,9 +214,92 @@ const addWorkoutSuccess = (json) => {
   }
 }
 
+const loginAuthRequest = () => {
+  return {
+    type: LOGIN_AUTH_REQUEST
+  }
+}
+
+const loginAuthSuccess = (username, token) => {
+  return {
+    type: LOGIN_AUTH_SUCCESS,
+    username: username,
+    token: token
+  }
+}
+
+const loginAuthFailure = (json) => {
+  return {
+    type: LOGIN_AUTH_FAILURE
+  }
+}
+
+const createAccountRequest = () => {
+  return {
+    type: CREATE_ACCOUNT_REQUEST
+  }
+}
+
+const createAccountSuccess = (json) => {
+  return {
+    type: CREATE_ACCOUNT_SUCCESS,
+    user: {
+      id: json.id,
+      username: json.username,
+      fname: json.fname,
+      lname: json.lname
+    }
+  }
+}
+
 /*
  * Async action creators
  */
+
+export const createAccount = (username, password, fname, lname) => {
+  return (dispatch) => {
+    dispatch(createAccountRequest())
+    return fetch('/api/createaccount',
+      {
+        method: 'POST',
+        headers: new Headers({'content-type': 'application/json'}),
+        body: JSON.stringify({
+          type: 'CREATE_ACCOUNT',
+          username: username,
+          password: password,
+          fname: fname,
+          lname: lname
+        })
+      }
+    )
+    .then(response => response.json())
+    .then(json => dispatch(createAccountSuccess(json)))
+  }
+}
+
+export const loginAuth = (username, password) => {
+  return (dispatch) => {
+    dispatch(loginAuthRequest())
+    return fetch('/api/login',
+      {
+        method: 'POST',
+        headers: new Headers({'content-type': 'application/json'}),
+        body: JSON.stringify({
+          type: 'LOGIN_AUTH',
+          username: username,
+          password: password
+        })
+      }
+    ).then(response => response.json())
+    .then(json => {
+      // check if login successful, then dispatch loginAuthSuccess
+      // otherwise, dispatch loginAuthFailure
+      if (json.message === 'ok') {
+        dispatch(loginAuthSuccess(username, json.token))
+      }
+    })
+  }
+};
 
 export const updateSet = (exerciseId, setArrayIndex, setId, weight, repetitions) => {
   return (dispatch) => {
@@ -369,19 +458,33 @@ export const deleteWorkout = (workoutId, workoutIndex) => {
   }
 }
 
-export const fetchWorkouts = () => {
+export const fetchWorkouts = (token) => {
   return (dispatch) => {
     dispatch(fetchWorkoutsRequest())
-    return fetch('/api/workouts')
+    return fetch('/api/workouts',
+      {
+        method: 'GET',
+        headers: new Headers(
+          {'Authorization': 'JWT ' + token}
+        )
+      }
+    )
     .then(response => response.json())
     .then(json => dispatch(fetchWorkoutsSuccess(json)))
   }
 }
 
-export const addWorkout = () => {
+export const addWorkout = (token) => {
   return (dispatch) => {
     dispatch(addWorkoutRequest())
-    return fetch('/api/addworkout')
+    return fetch('/api/addworkout',
+      {
+        method: 'GET',
+        headers: new Headers(
+          {'Authorization': 'JWT ' + token}
+        )
+      }
+    )
     .then(response => response.json())
     .then(json => dispatch(addWorkoutSuccess(json)))
   }

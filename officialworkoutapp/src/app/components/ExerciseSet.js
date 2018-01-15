@@ -75,13 +75,13 @@ class ExerciseSet extends React.Component {
   render() {
     return (
       <li className='list-group-item'>
-        <div className='form-group has-success'>
+        <div className='form-group'>
           <h4 className='set-number'>{`Set ${this.props.index+1}`}</h4>
           <label className='set-data'>Weight:</label>
-          <input className='form-control form-control-success' type='number' name='weight' value={this.state.weight} min='0'
+          <input className='form-control' type='number' name='weight' value={this.state.weight} min='0'
             onChange={this.handleWeightChange} />
           <label className='set-data'>Repetitions:</label>
-          <input className='form-control form-control-success' type='number' name='repetitions'
+          <input className='form-control' type='number' name='repetitions'
             value={this.state.repetitions} min='0' onChange={this.handleRepetitionsChange} />
           <div className='row'>
             <div className='col'>

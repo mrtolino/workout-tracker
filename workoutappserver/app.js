@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 var expressSanitizer = require('express-sanitizer');
 var compression = require('compression');
 var helmet = require('helmet');
+var passport = require('passport');
 
 //var index = require('./routes/index');
 var api = require('./routes/api');
@@ -19,6 +20,7 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(passport.initialize());
 app.use(compression());
 app.use(helmet());
 app.use(logger('dev'));
