@@ -301,15 +301,19 @@ export const loginAuth = (username, password) => {
   }
 };
 
-export const updateSet = (exerciseId, setArrayIndex, setId, weight, repetitions) => {
+export const updateSet = (token, workoutId, exerciseId, setArrayIndex, setId, weight, repetitions) => {
   return (dispatch) => {
     dispatch(updateSetRequest())
     return fetch('/api/updateset',
       {
         method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
+        headers: new Headers(
+          {'content-type': 'application/json',
+           'Authorization': 'JWT ' + token}
+        ),
         body: JSON.stringify({
           type: 'UPDATE_SET',
+          workoutId: workoutId,
           exerciseId: exerciseId,
           setId: setId,
           weight: weight,
@@ -328,15 +332,19 @@ export const updateSet = (exerciseId, setArrayIndex, setId, weight, repetitions)
   }
 }
 
-export const fetchSets = (exerciseId) => {
+export const fetchSets = (token, workoutId, exerciseId) => {
   return (dispatch) => {
     dispatch(requestSets())
     return fetch('/api/sets',
       {
         method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
+        headers: new Headers(
+          {'content-type': 'application/json',
+           'Authorization': 'JWT ' + token}
+        ),
         body: JSON.stringify({
           type: 'RETRIEVE_SETS',
+          workoutId: workoutId,
           exerciseId: exerciseId
         })
       }
@@ -346,13 +354,16 @@ export const fetchSets = (exerciseId) => {
   }
 }
 
-export const fetchExercises = (workoutId) => {
+export const fetchExercises = (token, workoutId) => {
   return (dispatch) => {
     dispatch(requestExercises())
     return fetch('/api/exercises',
         {
           method: 'POST',
-          headers: new Headers({'content-type': 'application/json'}),
+          headers: new Headers(
+            {'content-type': 'application/json',
+             'Authorization': 'JWT ' + token}
+          ),
           body: JSON.stringify({
             type: 'RETRIEVE_EXERCISES',
             workoutId: workoutId
@@ -364,13 +375,16 @@ export const fetchExercises = (workoutId) => {
   }
 }
 
-export const addExercise = (workoutId, name) => {
+export const addExercise = (token, workoutId, name) => {
   return (dispatch) => {
     dispatch(addExerciseRequest(name))
     return fetch('/api/addexercise',
         {
           method: 'POST',
-          headers: new Headers({'content-type': 'application/json'}),
+          headers: new Headers(
+            {'content-type': 'application/json',
+             'Authorization': 'JWT ' + token}
+          ),
           body: JSON.stringify({
             type: 'ADD_EXERCISE',
             workoutId: workoutId,
@@ -383,15 +397,19 @@ export const addExercise = (workoutId, name) => {
   }
 }
 
-export const addSet = (exerciseId, weight, repetitions) => {
+export const addSet = (token, workoutId, exerciseId, weight, repetitions) => {
   return (dispatch) => {
     dispatch(addSetRequest())
     return fetch('/api/addset',
       {
         method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
+        headers: new Headers(
+          {'content-type': 'application/json',
+           'Authorization': 'JWT ' + token}
+        ),
         body: JSON.stringify({
           type: 'ADD_SET',
+          workoutId: workoutId,
           exerciseId: exerciseId,
           weight: weight,
           repetitions: repetitions
@@ -403,15 +421,19 @@ export const addSet = (exerciseId, weight, repetitions) => {
   }
 }
 
-export const deleteSet = (exerciseId, setId, setArrayIndex) => {
+export const deleteSet = (token, workoutId, exerciseId, setId, setArrayIndex) => {
   return (dispatch) => {
     dispatch(deleteSetRequest())
     return fetch('/api/deleteset',
       {
         method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
+        headers: new Headers(
+          {'content-type': 'application/json',
+           'Authorization': 'JWT ' + token}
+        ),
         body: JSON.stringify({
           type: 'DELETE_SET',
+          workoutId: workoutId,
           exerciseId: exerciseId,
           setId: setId
         })
@@ -422,15 +444,19 @@ export const deleteSet = (exerciseId, setId, setArrayIndex) => {
   }
 }
 
-export const deleteExercise = (exerciseId, exrcIndex) => {
+export const deleteExercise = (token, workoutId, exerciseId, exrcIndex) => {
   return (dispatch) => {
     dispatch(deleteExerciseRequest())
     return fetch('/api/deleteexercise',
       {
         method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
+        headers: new Headers(
+          {'content-type': 'application/json',
+           'Authorization': 'JWT ' + token}
+        ),
         body: JSON.stringify({
           type: 'DELETE_EXERCISE',
+          workoutId: workoutId,
           exerciseId: exerciseId
         })
       }
@@ -440,13 +466,16 @@ export const deleteExercise = (exerciseId, exrcIndex) => {
   }
 }
 
-export const deleteWorkout = (workoutId, workoutIndex) => {
+export const deleteWorkout = (token, workoutId, workoutIndex) => {
   return (dispatch) => {
     dispatch(deleteWorkoutRequest())
     return fetch('/api/deleteworkout',
       {
         method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
+        headers: new Headers(
+          {'content-type': 'application/json',
+          'Authorization': 'JWT ' + token}
+        ),
         body: JSON.stringify({
           type: 'DELETE_WORKOUT',
           workoutId: workoutId

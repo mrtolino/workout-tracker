@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
+import {withCookies} from 'react-cookie';
 
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 
@@ -21,7 +22,7 @@ class Workout extends React.Component {
   }
 
   onConfirmDelete() {
-    this.props.onDeleteWorkout(this.props.workout.id, this.props.workoutIndex)
+    this.props.onDeleteWorkout(this.props.cookies.get('token'), this.props.workout.id, this.props.workoutIndex)
     this.onCloseConfirmationModal();
   }
 
@@ -46,10 +47,10 @@ class Workout extends React.Component {
           onCloseConfirmationModal={this.onCloseConfirmationModal}
           onConfirmDelete={this.onConfirmDelete}
         />
-        
+
       </li>
     );
   }
 }
 
-export default Workout;
+export default withCookies(Workout);

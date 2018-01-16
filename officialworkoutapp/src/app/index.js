@@ -31,15 +31,27 @@ const App = () => (
     <Switch>
       <Route exact path={'/'} render={() => (
         <div className='container'>
-          <h1 className='text-center'>Workout Tracker Home Page</h1>
+          <h1 className='title text-center'>Workout Tracker</h1>
           <LoginForm />
         </div>
       )} />
       <Route path={'/workoutlist'} render={() => (
-        <WorkoutList user={store.getState().user} />
+        <div className='container'>
+          <div className='row justify-content-center'>
+            <div className='col-md-8'>
+              <h1 className='title'>Workout Tracker</h1>
+            </div>
+          </div>
+          <WorkoutList />
+        </div>
       )} />
       <Route path={'/exercises/:workoutId'} render={({match}) => (
-        <div id='exerciselist'>
+        <div className='container'>
+          <div className='row justify-content-center'>
+            <div className='col-md-8'>
+              <h1 className='title'>Workout Tracker</h1>
+            </div>
+          </div>
           <ExerciseList workoutId={match.params.workoutId} />
         </div>
       )} />

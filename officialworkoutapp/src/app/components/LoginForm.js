@@ -4,7 +4,7 @@ import {Link, withRouter} from 'react-router-dom';
 import {withCookies, Cookies} from 'react-cookie';
 
 import WorkoutList from './WorkoutList';
-import {loginAuth, createAccount} from '../actions';
+// import {loginAuth, createAccount} from '../actions';
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -16,6 +16,12 @@ class LoginForm extends React.Component {
       lname: '',
       createAccount: false
     };
+  }
+
+  componentWillMount() {
+    if (this.props.cookies.get('token')) {
+      this.props.history.push('/workoutlist');
+    }
   }
 
   onCreateAccountForm() {
@@ -77,7 +83,24 @@ class LoginForm extends React.Component {
   }
 
   onCreateAccountSubmit() {
-    this.props.onCreateAccount(this.state.username, this.state.password, this.state.fname, this.state.lname);
+    // this.props.onCreateAccount(this.state.username, this.state.password, this.state.fname, this.state.lname);
+    fetch('/api/createaccount',
+      {
+        method: 'POST',
+        headers: new Headers({'content-type': 'application/json'}),
+        body: JSON.stringify({
+          type: 'CREATE_ACCOUNT',
+          username: this.state.username,
+          password: this.state.password,
+          fname: this.state.fname,
+          lname: this.state.lname
+        })
+      }
+    )
+    .then(response => response.json())
+    .then(() => {
+      this.onLoginSubmit();
+    })
   }
 
   renderCreateAccountForm() {

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import {withCookies} from 'react-cookie';
 
 import {updateSet, deleteSet} from '../actions';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -54,7 +55,8 @@ class ExerciseSet extends React.Component {
   }
 
   handleSubmit() {
-    this.props.onUpdateSet(this.props.exerciseId, this.props.index, this.props.setId, this.state.weight, this.state.repetitions);
+    this.props.onUpdateSet(this.props.cookies.get('token'), this.props.workoutId, this.props.exerciseId, this.props.index,
+                           this.props.setId, this.state.weight, this.state.repetitions);
     this.setState({
       setSaved: true
     });
@@ -64,7 +66,8 @@ class ExerciseSet extends React.Component {
     this.setState({
       setBeingDeleted: true
     });
-    this.props.onDeleteSet(this.props.exerciseId, this.props.setId, this.props.index);
+    this.props.onDeleteSet(this.props.cookies.get('token'), this.props.workoutId,
+                           this.props.exerciseId, this.props.setId, this.props.index);
     this.onCloseConfirmationModal();
   }
 
@@ -113,14 +116,14 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onUpdateSet: (exerciseId, setArrayIndex, setId, weight, repetitions) => {
-      dispatch(updateSet(exerciseId, setArrayIndex, setId, weight, repetitions))
+    onUpdateSet: (token, workoutId, exerciseId, setArrayIndex, setId, weight, repetitions) => {
+      dispatch(updateSet(token, workoutId, exerciseId, setArrayIndex, setId, weight, repetitions))
     }
     ,
-    onDeleteSet: (exerciseId, setId, setArrayIndex) => {
-      dispatch(deleteSet(exerciseId, setId, setArrayIndex))
+    onDeleteSet: (token, workoutId, exerciseId, setId, setArrayIndex) => {
+      dispatch(deleteSet(token, workoutId, exerciseId, setId, setArrayIndex))
     }
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ExerciseSet);
+export default connect(mapStateToProps, mapDispatchToProps)(withCookies(ExerciseSet));

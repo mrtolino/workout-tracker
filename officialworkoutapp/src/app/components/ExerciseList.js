@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 import {connect} from 'react-redux';
+import {withCookies} from 'react-cookie';
+import {withRouter} from 'react-router-dom';
 
 import Exercise from './Exercise';
 import {addExercise, fetchExercises, clearExercises} from '../actions';
@@ -12,8 +14,14 @@ class ExerciseList extends React.Component {
     super(props);
   }
 
+  componentWillMount() {
+    if (!this.props.cookies.get('token')) {
+      this.props.history.push('/');
+    }
+  }
+
   componentDidMount() {
-    this.props.onFetchExercises(this.props.workoutId);
+    this.props.onFetchExercises(this.props.cookies.get('token'), this.props.workoutId);
   }
 
   componentWillUnmount() {
@@ -35,7 +43,7 @@ class ExerciseList extends React.Component {
             <div className='col-md-10'>
               <button className='btn btn-primary btn-margin-top no-gutters' onClick={() => {
                 if (this.footerExrcName.value !== '') {
-                  this.props.onAddExercise(this.props.workoutId, this.footerExrcName.value)
+                  this.props.onAddExercise(this.props.cookies.get('token'), this.props.workoutId, this.footerExrcName.value)
                   this.footerExrcName.value = '';
                 }
               }}>
@@ -54,8 +62,14 @@ class ExerciseList extends React.Component {
 
         <div className='row justify-content-center'>
           <div className='col-md-10'>
+            <button className='btn btn-primary btn-margin-top no-gutters float-right' onClick={() => {
+              this.props.cookies.remove('token');
+              this.props.history.push('/');
+            }}>
+              Logout
+            </button>
             <Link to={'/workoutlist'}>
-              <button className='btn btn-primary btn-margin-top no-gutters float-right'>Back to Workout List</button>
+              <button className='btn btn-primary btn-margin-top no-gutters float-left'>Back to Workout List</button>
             </Link>
           </div>
         </div>
@@ -78,7 +92,7 @@ class ExerciseList extends React.Component {
           <div className='col-md-10'>
             <button className='btn btn-primary btn-margin-top no-gutters' onClick={() => {
               if (this.exrcName.value !== '') {
-                this.props.onAddExercise(this.props.workoutId, this.exrcName.value)
+                this.props.onAddExercise(this.props.cookies.get('token'), this.props.workoutId, this.exrcName.value)
                 this.exrcName.value = '';
               }
             }}>
@@ -112,11 +126,11 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAddExercise: (workoutId, name) => {
-      dispatch(addExercise(workoutId, name))
+    onAddExercise: (token, workoutId, name) => {
+      dispatch(addExercise(token, workoutId, name))
     },
-    onFetchExercises: (workoutId) => {
-      dispatch(fetchExercises(workoutId))
+    onFetchExercises: (token, workoutId) => {
+      dispatch(fetchExercises(token, workoutId))
     },
     onUnmount: () => {
       dispatch(clearExercises())
@@ -124,4 +138,4 @@ const mapDispatchToProps = (dispatch) => {
   }
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ExerciseList);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withCookies(ExerciseList)));

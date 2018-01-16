@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ExerciseSet from './ExerciseSet';
 import {connect} from 'react-redux';
+import {withCookies} from 'react-cookie';
 
 import {deleteExercise, addSet, fetchSets} from '../actions';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
@@ -21,7 +22,7 @@ class Exercise extends React.Component {
   }
 
   componentDidMount() {
-    this.props.onFetchSets(this.props.exrc.id);
+    this.props.onFetchSets(this.props.cookies.get('token'), this.props.workoutId, this.props.exrc.id);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -49,7 +50,7 @@ class Exercise extends React.Component {
   }
 
   onConfirmDelete() {
-    this.props.onDeleteExercise(this.props.exrc.id, this.props.exrcIndex);
+    this.props.onDeleteExercise(this.props.cookies.get('token'), this.props.workoutId, this.props.exrc.id, this.props.exrcIndex);
     this.onCloseConfirmationModal();
   }
 
@@ -94,7 +95,7 @@ class Exercise extends React.Component {
         <div className='row'>
           <div className='col'>
             <button className='btn btn-primary float-left no-gutters' onClick={() => {
-              this.props.onAddSet(this.props.exrc.id, 0, 0)
+              this.props.onAddSet(this.props.cookies.get('token'), this.props.workoutId, this.props.exrc.id, 0, 0)
             }}>
               Add Set
             </button>
@@ -125,14 +126,14 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onDeleteExercise: (exerciseId, exrcIndex) => {
-      dispatch(deleteExercise(exerciseId, exrcIndex))
+    onDeleteExercise: (token, workoutId, exerciseId, exrcIndex) => {
+      dispatch(deleteExercise(token, workoutId, exerciseId, exrcIndex))
     },
-    onAddSet: (exerciseId, weight, repetitions) => {
-      dispatch(addSet(exerciseId, weight, repetitions))
+    onAddSet: (token, workoutId, exerciseId, weight, repetitions) => {
+      dispatch(addSet(token, workoutId, exerciseId, weight, repetitions))
     },
-    onFetchSets: (exerciseId) => {
-      dispatch(fetchSets(exerciseId))
+    onFetchSets: (token, workoutId, exerciseId) => {
+      dispatch(fetchSets(token, workoutId, exerciseId))
     }
   };
 };
@@ -142,4 +143,4 @@ const mapDispatchToProps = (dispatch) => {
   name: PropTypes.string.isRequired,
 };*/
 
-export default connect(mapStateToProps, mapDispatchToProps)(Exercise);
+export default connect(mapStateToProps, mapDispatchToProps)(withCookies(Exercise));
