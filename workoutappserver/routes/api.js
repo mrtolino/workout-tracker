@@ -12,16 +12,15 @@ var router = express.Router();
 
 let jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
-jwtOptions.secretOrKey = 'tasmanianDevil';
+jwtOptions.secretOrKey =
+  'se@nT0l1n01sAw3s0m3V3ryC001@n#$^*()32$$$^1243288Yklsfwi^7#@!90&&$253!325edds##@$!@(#*$&KDksdlfkjwoeiKDhemdhJFS,djsw)';
 
 let strategy = new JwtStrategy(jwtOptions, function(jwt_payload, done) {
-  console.log('payload received', jwt_payload);
   models.user.findOne({
     where: {
       username: jwt_payload.username
     }
   }).then(function(user) {
-    console.log("IN HERE!!!!!!!");
     if (user) {
       done(null, user);
     } else {
@@ -61,7 +60,7 @@ router.post('/login', function(req, res, next) {
         .then(function(result) {
           if (result === true) {
             var payload = {username: user.username};
-            var token = jwt.sign(payload, jwtOptions.secretOrKey);
+            var token = jwt.sign(payload, jwtOptions.secretOrKey, {expiresIn: '1h'});
             res.status(200).json({message: 'ok', token: token});
           } else {
             res.status(401).json('Invalid credentials.');
@@ -83,115 +82,205 @@ router.get('/addworkout', passport.authenticate('jwt', {session: false}), functi
   });
 });
 
-router.post('/addexercise', function(req, res, next) {
-  models.exercise.create({
-    name: req.sanitize(req.body.name),
-    workoutId: req.sanitize(req.body.workoutId)
-  }).then(function(exrc) {
-    res.json(exrc);
-  });
-});
-
-router.post('/addset', function(req, res, next) {
-  models.set.create({
-    weight: Number(req.sanitize(String(req.body.weight))),
-    repetitions: Number(req.sanitize(String(req.body.repetitions))),
-    exerciseId: req.sanitize(req.body.exerciseId)
-  }).then(function(set) {
-    res.json(set);
-  });
-});
-
-router.post('/updateset', function(req, res, next) {
-  models.set.update({
-    weight: Number(req.sanitize(String(req.body.weight))),
-    repetitions: Number(req.sanitize(String(req.body.repetitions)))
-  }, {
+router.post('/addexercise', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.findAll({
     where: {
-      id: req.sanitize(req.body.setId),
-      exerciseId: req.sanitize(req.body.exerciseId)
+      id: req.body.workoutId,
+      userId: req.user.id
     }
-  }).then(function(set) {
-    res.json(set);
+  }).then(function(workouts) {
+    if (workouts.length === 0) {
+      res.status(401).json('Invalid user.');
+    } else {
+      models.exercise.create({
+        name: req.sanitize(req.body.name),
+        workoutId: req.sanitize(req.body.workoutId)
+      }).then(function(exrc) {
+        res.json(exrc);
+      });
+    }
+  });
+});
+
+router.post('/addset', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.findAll({
+    where: {
+      id: req.body.workoutId,
+      userId: req.user.id
+    }
+  }).then(function(workouts) {
+    if (workouts.length === 0) {
+      res.status(401).json('Invalid request.');
+    } else {
+      models.set.create({
+        weight: Number(req.sanitize(String(req.body.weight))),
+        repetitions: Number(req.sanitize(String(req.body.repetitions))),
+        exerciseId: req.body.exerciseId
+      }).then(function(set) {
+        res.json(set);
+      });
+    }
+  });
+});
+
+router.post('/updateset', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.findAll({
+    where: {
+      id: req.body.workoutId,
+      userId: req.user.id
+    }
+  }).then(function(workouts) {
+    if (workouts.length === 0) {
+      res.status(401).json('Invalid request.');
+    } else {
+      models.set.update({
+        weight: Number(req.sanitize(String(req.body.weight))),
+        repetitions: Number(req.sanitize(String(req.body.repetitions)))
+      }, {
+        where: {
+          id: req.sanitize(req.body.setId),
+          exerciseId: req.sanitize(req.body.exerciseId)
+        }
+      }).then(function(set) {
+        res.json(set);
+      });
+    }
   })
 });
 
-router.post('/deleteset', function(req, res, next) {
-  models.set.destroy({
+router.post('/deleteset', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.findAll({
     where: {
-      id: req.sanitize(req.body.setId),
-      exerciseId: req.sanitize(req.body.exerciseId)
+      id: req.body.workoutId,
+      userId: req.user.id
     }
-  }).then(function(numRowsDeleted) {
-    res.json(numRowsDeleted);
-  })
-});
-
-router.post('/deleteexercise', function(req, res, next) {
-  models.set.destroy({
-    where: {
-      exerciseId: req.sanitize(req.body.exerciseId)
-    }
-  }).then(function() {
-    models.exercise.destroy({
-      where: {
-        id: req.sanitize(req.body.exerciseId)
-      }
-    }).then(function() {
-      res.json('EXERCISE DELETED SUCCESSFULLY');
-    })
-  })
-});
-
-router.post('/exercises', function(req, res, next) {
-  models.exercise.findAll({
-    where: {
-      workoutId: req.sanitize(req.body.workoutId)
-    }
-  }).then(function(exrcs) {
-    res.json(exrcs);
-  });
-});
-
-router.post('/sets', function(req, res, next) {
-  models.set.findAll({
-    where: {
-      exerciseId: req.sanitize(req.body.exerciseId)
-    }
-  }).then(function(sets) {
-    res.json(sets);
-  });
-});
-
-router.post('/deleteworkout', function(req, res, next) {
-  let workoutId = req.sanitize(req.body.workoutId);
-
-  models.exercise.findAll({
-    where: {
-      workoutId: workoutId
-    }
-  }).then(function(exrcs) {
-    exrcs.forEach((exrc) => {
+  }).then(function(workouts) {
+    if (workouts.length === 0) {
+      res.status(401).json('Invalid request.');
+    } else {
       models.set.destroy({
         where: {
-          exerciseId: exrc.id
+          id: req.sanitize(req.body.setId),
+          exerciseId: req.sanitize(req.body.exerciseId)
         }
-      })
-    })
-  }).then(() => {
-    models.exercise.destroy({
-      where: {
-        workoutId: workoutId
-      }
-    })
-  }).then(() => {
-    models.workout.destroy({
-      where: {
-        id: workoutId
-      }
-    })
-  }).then(function() {
-    res.json('SUCCESS');
+      }).then(function(numRowsDeleted) {
+        res.json(numRowsDeleted);
+      });
+    }
+  });
+});
+
+router.post('/deleteexercise', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.findAll({
+    where: {
+      id: req.body.workoutId,
+      userId: req.user.id
+    }
+  }).then(function(workouts) {
+    if (workouts.length === 0) {
+      res.status(401).json('Invalid request.');
+    } else {
+      models.set.destroy({
+        where: {
+          exerciseId: req.sanitize(req.body.exerciseId)
+        }
+      }).then(function() {
+        models.exercise.destroy({
+          where: {
+            id: req.sanitize(req.body.exerciseId)
+          }
+        }).then(function() {
+          res.json('EXERCISE DELETED SUCCESSFULLY');
+        })
+      });
+    }
+  })
+});
+
+router.post('/exercises', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.findAll({
+    where: {
+      id: req.body.workoutId,
+      userId: req.user.id
+    }
+  }).then(function(workouts) {
+    if (workouts.length === 0) {
+      res.status(401).json('Invalid user.');
+    } else {
+      models.exercise.findAll({
+        where: {
+          workoutId: req.body.workoutId
+        }
+      }).then(function(exrcs) {
+        res.json(exrcs);
+      });
+    }
+  })
+});
+
+router.post('/sets', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.findAll({
+    where: {
+      id: req.body.workoutId,
+      userId: req.user.id
+    }
+  }).then(function(workouts) {
+    if (workouts.length === 0) {
+      res.status(401).json('Invalid request.');
+    } else {
+      models.set.findAll({
+        where: {
+          exerciseId: req.sanitize(req.body.exerciseId)
+        }
+      }).then(function(sets) {
+        res.json(sets);
+      });
+    }
+  });
+});
+
+router.post('/deleteworkout', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  let workoutId = req.body.workoutId;
+
+  //check if this workout belongs to the authorized user
+  models.workout.findAll({
+    where: {
+      id: workoutId,
+      userId: req.user.id
+    }
+  }).then(function(workouts) {
+    if (workouts.length === 0) {
+      res.status(401).json('Invalid user.');
+    } else {
+      //if it does, then delete the workout
+      models.exercise.findAll({
+        where: {
+          workoutId: workoutId
+        }
+      }).then(function(exrcs) {
+        exrcs.forEach((exrc) => {
+          models.set.destroy({
+            where: {
+              exerciseId: exrc.id
+            }
+          })
+        })
+      }).then(() => {
+        models.exercise.destroy({
+          where: {
+            workoutId: workoutId
+          }
+        })
+      }).then(() => {
+        models.workout.destroy({
+          where: {
+            id: workoutId
+          }
+        })
+      }).then(function() {
+        res.json('SUCCESS');
+      });
+    }
   });
 });
 
