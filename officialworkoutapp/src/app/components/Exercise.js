@@ -138,9 +138,15 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-/*Exercise.propTypes = {
-  id: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-};*/
+Exercise.propTypes = {
+  key: PropTypes.number,
+  workoutId: PropTypes.number.isRequired,
+  exrcIndex: PropTypes.number.isRequired,
+  exrc: PropTypes.object.isRequired,
+  onDeleteExercise: PropTypes.func.isRequired,
+  onAddSet: PropTypes.func.isRequired,
+  onFetchSets: PropTypes.func.isRequired,
+  cookies: PropTypes.object.isRequired
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(withCookies(Exercise));

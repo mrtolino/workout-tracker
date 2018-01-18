@@ -126,4 +126,17 @@ const mapDispatchToProps = (dispatch) => {
   }
 };
 
+ExerciseSet.propTypes = {
+  key: PropTypes.number,
+  index: PropTypes.number.isRequired,
+  workoutId: PropTypes.number.isRequired,
+  exerciseId: PropTypes.number.isRequired,
+  setId: PropTypes.number.isRequired,
+  weight: PropTypes.number.isRequired,
+  repetitions: PropTypes.number.isRequired,
+  onUpdateSet: PropTypes.func.isRequired,
+  onDeleteSet: PropTypes.func.isRequired,
+  cookies: PropTypes.object.isRequired
+};
+
 export default connect(mapStateToProps, mapDispatchToProps)(withCookies(ExerciseSet));

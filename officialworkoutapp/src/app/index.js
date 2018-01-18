@@ -52,7 +52,7 @@ const App = () => (
               <h1 className='title'>Workout Tracker</h1>
             </div>
           </div>
-          <ExerciseList workoutId={match.params.workoutId} />
+          <ExerciseList workoutId={Number(match.params.workoutId)} />
         </div>
       )} />
     </Switch>

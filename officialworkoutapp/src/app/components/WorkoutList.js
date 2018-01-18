@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Workout from './Workout';
 import {connect} from 'react-redux';
-import {withCookies, Cookies} from 'react-cookie';
+import {withCookies} from 'react-cookie';
 import {withRouter} from 'react-router-dom';
 
 import {addWorkout, fetchWorkouts, deleteWorkout} from '../actions';
@@ -67,6 +67,15 @@ const mapDispatchToProps = (dispatch) => {
     onFetchWorkouts: (token) => dispatch(fetchWorkouts(token)),
     onDeleteWorkout: (token, workoutId, workoutIndex) => dispatch(deleteWorkout(token, workoutId, workoutIndex))
   };
+};
+
+WorkoutList.propTypes = {
+  workouts: PropTypes.array.isRequired,
+  onAddWorkout: PropTypes.func.isRequired,
+  onFetchWorkouts: PropTypes.func.isRequired,
+  onDeleteWorkout: PropTypes.func.isRequired,
+  history: PropTypes.object.isRequired,
+  cookies: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withCookies(WorkoutList)));

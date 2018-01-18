@@ -1,10 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
 import {withCookies, Cookies} from 'react-cookie';
 
 import WorkoutList from './WorkoutList';
-// import {loginAuth, createAccount} from '../actions';
 
 class LoginForm extends React.Component {
   constructor(props) {
@@ -14,7 +14,10 @@ class LoginForm extends React.Component {
       password: '',
       fname: '',
       lname: '',
-      createAccount: false
+      createAccount: false,
+      loginError: false,
+      loginErrorMessage: '',
+      loading: false
     };
   }
 
@@ -73,17 +76,24 @@ class LoginForm extends React.Component {
       }
     ).then(response => response.json())
     .then(json => {
-      // check if login successful, then dispatch loginAuthSuccess
-      // otherwise, dispatch loginAuthFailure
       if (json.message === 'ok') {
         this.props.cookies.set('token', json.token);
         this.props.history.push('/workoutlist');
+      } else {
+        this.setState({
+          loginError: true,
+          loginErrorMessage: json.message,
+          loading: false
+        });
       }
     })
+
+    this.setState({
+      loading: true
+    });
   }
 
   onCreateAccountSubmit() {
-    // this.props.onCreateAccount(this.state.username, this.state.password, this.state.fname, this.state.lname);
     fetch('/api/createaccount',
       {
         method: 'POST',
@@ -100,7 +110,32 @@ class LoginForm extends React.Component {
     .then(response => response.json())
     .then(() => {
       this.onLoginSubmit();
-    })
+    });
+
+    this.setState({
+      loading: true
+    });
+  }
+
+  renderLoginProgressBar() {
+    if (this.state.loading) {
+      return (
+        <div className='progress'>
+          <div className='progress-bar progress-bar-striped progress-bar-animated prog-bar-width' role='progressbar'
+            aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'></div>
+        </div>
+      );
+    }
+  }
+
+  renderLoginErrorAlert() {
+    if (this.state.loginError) {
+      return (
+        <div className='alert alert-danger' role='alert'>
+          <strong>Oops!</strong> {this.state.loginErrorMessage}
+        </div>
+      );
+    }
   }
 
   renderCreateAccountForm() {
@@ -143,25 +178,19 @@ class LoginForm extends React.Component {
     return (
       <div className='row justify-content-center'>
         <div className='col-md-8'>
+          {this.renderLoginErrorAlert()}
           {this.renderLoginForm()}
           {this.renderCreateAccountForm()}
+          {this.renderLoginProgressBar()}
         </div>
       </div>
     );
   }
 };
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user
-  };
+LoginForm.propTypes = {
+  history: PropTypes.object.isRequired,
+  cookies: PropTypes.object.isRequired
 };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onLoginAuth: (username, password) => dispatch(loginAuth(username, password)),
-    onCreateAccount: (username, password, fname, lname) => dispatch(createAccount(username, password, fname, lname))
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withCookies(LoginForm)));
+export default withRouter(withCookies(LoginForm));

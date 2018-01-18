@@ -53,4 +53,12 @@ class Workout extends React.Component {
   }
 }
 
+Workout.propTypes = {
+  key: PropTypes.number,
+  workout: PropTypes.object.isRequired,
+  workoutIndex: PropTypes.number.isRequired,
+  onDeleteWorkout: PropTypes.func.isRequired,
+  cookies: PropTypes.object.isRequired
+};
+
 export default withCookies(Workout);

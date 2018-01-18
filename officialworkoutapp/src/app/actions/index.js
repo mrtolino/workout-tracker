@@ -22,42 +22,10 @@ const FETCH_WORKOUTS_REQUEST = 'FETCH_WORKOUTS_REQUEST';
 const FETCH_WORKOUTS_SUCCESS = 'FETCH_WORKOUTS_SUCCESS';
 const ADD_WORKOUT_REQUEST = 'ADD_WORKOUT_REQUEST';
 const ADD_WORKOUT_SUCCESS = 'ADD_WORKOUT_SUCCESS';
-const LOGIN_AUTH_REQUEST = 'LOGIN_AUTH_REQUEST';
-const LOGIN_AUTH_SUCCESS = 'LOGIN_AUTH_SUCCESS';
-const LOGIN_AUTH_FAILURE = 'LOGIN_AUTH_FAILURE';
-const CREATE_ACCOUNT_REQUEST = 'CREATE_ACCOUNT_REQUEST';
-const CREATE_ACCOUNT_SUCCESS = 'CREATE_ACCOUNT_SUCCESS';
-const CREATE_ACCOUNT_FAILURE = 'CREATE_ACCOUNT_FAILURE';
 
 /*
  * Action creators
  */
-
-export const clearExercises = () => {
-    return {
-      type: CLEAR_EXERCISES
-    }
-};
-
-const requestExercises = () => {
-    return {
-      type: REQUEST_EXERCISES
-    }
-}
-
-const receiveExercises = (json, workoutId) => {
-  return {
-    type: RECEIVE_EXERCISES,
-    workoutId: workoutId,
-    exercises: json.map(child => {
-      return {
-        id: child.id,
-        name: child.name,
-        exerciseSets: []
-      }
-    })
-  }
-}
 
 const requestSets = () => {
   return {
@@ -127,6 +95,32 @@ const deleteSetSuccess = (json, exerciseId, setArrayIndex) => {
     type: DELETE_SET_SUCCESS,
     exerciseId: exerciseId,
     setArrayIndex: setArrayIndex
+  }
+}
+
+export const clearExercises = () => {
+    return {
+      type: CLEAR_EXERCISES
+    }
+};
+
+const requestExercises = () => {
+    return {
+      type: REQUEST_EXERCISES
+    }
+}
+
+const receiveExercises = (json, workoutId) => {
+  return {
+    type: RECEIVE_EXERCISES,
+    workoutId: workoutId,
+    exercises: json.map(child => {
+      return {
+        id: child.id,
+        name: child.name,
+        exerciseSets: []
+      }
+    })
   }
 }
 
@@ -214,123 +208,9 @@ const addWorkoutSuccess = (json) => {
   }
 }
 
-const loginAuthRequest = () => {
-  return {
-    type: LOGIN_AUTH_REQUEST
-  }
-}
-
-const loginAuthSuccess = (username, token) => {
-  return {
-    type: LOGIN_AUTH_SUCCESS,
-    username: username,
-    token: token
-  }
-}
-
-const loginAuthFailure = (json) => {
-  return {
-    type: LOGIN_AUTH_FAILURE
-  }
-}
-
-const createAccountRequest = () => {
-  return {
-    type: CREATE_ACCOUNT_REQUEST
-  }
-}
-
-const createAccountSuccess = (json) => {
-  return {
-    type: CREATE_ACCOUNT_SUCCESS,
-    user: {
-      id: json.id,
-      username: json.username,
-      fname: json.fname,
-      lname: json.lname
-    }
-  }
-}
-
 /*
  * Async action creators
  */
-
-export const createAccount = (username, password, fname, lname) => {
-  return (dispatch) => {
-    dispatch(createAccountRequest())
-    return fetch('/api/createaccount',
-      {
-        method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
-        body: JSON.stringify({
-          type: 'CREATE_ACCOUNT',
-          username: username,
-          password: password,
-          fname: fname,
-          lname: lname
-        })
-      }
-    )
-    .then(response => response.json())
-    .then(json => dispatch(createAccountSuccess(json)))
-  }
-}
-
-export const loginAuth = (username, password) => {
-  return (dispatch) => {
-    dispatch(loginAuthRequest())
-    return fetch('/api/login',
-      {
-        method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
-        body: JSON.stringify({
-          type: 'LOGIN_AUTH',
-          username: username,
-          password: password
-        })
-      }
-    ).then(response => response.json())
-    .then(json => {
-      // check if login successful, then dispatch loginAuthSuccess
-      // otherwise, dispatch loginAuthFailure
-      if (json.message === 'ok') {
-        dispatch(loginAuthSuccess(username, json.token))
-      }
-    })
-  }
-};
-
-export const updateSet = (token, workoutId, exerciseId, setArrayIndex, setId, weight, repetitions) => {
-  return (dispatch) => {
-    dispatch(updateSetRequest())
-    return fetch('/api/updateset',
-      {
-        method: 'POST',
-        headers: new Headers(
-          {'content-type': 'application/json',
-           'Authorization': 'JWT ' + token}
-        ),
-        body: JSON.stringify({
-          type: 'UPDATE_SET',
-          workoutId: workoutId,
-          exerciseId: exerciseId,
-          setId: setId,
-          weight: weight,
-          repetitions: repetitions
-        })
-      }
-    )
-    .then(response => response.json())
-    .then(json => { //TODO: Check if JSON response is successful or not
-      dispatch(updateSetSuccess({
-        id: setId,
-        weight: weight,
-        repetitions: repetitions
-      }, exerciseId, setArrayIndex))
-    })
-  }
-}
 
 export const fetchSets = (token, workoutId, exerciseId) => {
   return (dispatch) => {
@@ -351,49 +231,6 @@ export const fetchSets = (token, workoutId, exerciseId) => {
     )
     .then(response => response.json())
     .then(json => dispatch(receiveSets(json, exerciseId)))
-  }
-}
-
-export const fetchExercises = (token, workoutId) => {
-  return (dispatch) => {
-    dispatch(requestExercises())
-    return fetch('/api/exercises',
-        {
-          method: 'POST',
-          headers: new Headers(
-            {'content-type': 'application/json',
-             'Authorization': 'JWT ' + token}
-          ),
-          body: JSON.stringify({
-            type: 'RETRIEVE_EXERCISES',
-            workoutId: workoutId
-          })
-        }
-      )
-      .then(response => response.json())
-      .then(json => dispatch(receiveExercises(json, workoutId)))
-  }
-}
-
-export const addExercise = (token, workoutId, name) => {
-  return (dispatch) => {
-    dispatch(addExerciseRequest(name))
-    return fetch('/api/addexercise',
-        {
-          method: 'POST',
-          headers: new Headers(
-            {'content-type': 'application/json',
-             'Authorization': 'JWT ' + token}
-          ),
-          body: JSON.stringify({
-            type: 'ADD_EXERCISE',
-            workoutId: workoutId,
-            name: name
-          })
-        }
-      )
-      .then(response => response.json())
-      .then(json => dispatch(addExerciseSuccess(json, workoutId)))
   }
 }
 
@@ -444,6 +281,80 @@ export const deleteSet = (token, workoutId, exerciseId, setId, setArrayIndex) =>
   }
 }
 
+export const updateSet = (token, workoutId, exerciseId, setArrayIndex, setId, weight, repetitions) => {
+  return (dispatch) => {
+    dispatch(updateSetRequest())
+    return fetch('/api/updateset',
+      {
+        method: 'POST',
+        headers: new Headers(
+          {'content-type': 'application/json',
+           'Authorization': 'JWT ' + token}
+        ),
+        body: JSON.stringify({
+          type: 'UPDATE_SET',
+          workoutId: workoutId,
+          exerciseId: exerciseId,
+          setId: setId,
+          weight: weight,
+          repetitions: repetitions
+        })
+      }
+    )
+    .then(response => response.json())
+    .then(json => { //TODO: Check if JSON response is successful or not
+      dispatch(updateSetSuccess({
+        id: setId,
+        weight: weight,
+        repetitions: repetitions
+      }, exerciseId, setArrayIndex))
+    })
+  }
+}
+
+export const fetchExercises = (token, workoutId) => {
+  return (dispatch) => {
+    dispatch(requestExercises())
+    return fetch('/api/exercises',
+        {
+          method: 'POST',
+          headers: new Headers(
+            {'content-type': 'application/json',
+             'Authorization': 'JWT ' + token}
+          ),
+          body: JSON.stringify({
+            type: 'RETRIEVE_EXERCISES',
+            workoutId: workoutId
+          })
+        }
+      )
+      .then(response => response.json())
+      .then(json => dispatch(receiveExercises(json, workoutId)))
+  }
+}
+
+export const addExercise = (token, workoutId, name) => {
+  return (dispatch) => {
+    dispatch(addExerciseRequest(name))
+    return fetch('/api/addexercise',
+        {
+          method: 'POST',
+          headers: new Headers(
+            {'content-type': 'application/json',
+             'Authorization': 'JWT ' + token}
+          ),
+          body: JSON.stringify({
+            type: 'ADD_EXERCISE',
+            workoutId: workoutId,
+            name: name
+          })
+        }
+      )
+      .then(response => response.json())
+      .then(json => dispatch(addExerciseSuccess(json, workoutId)))
+  }
+}
+
 export const deleteExercise = (token, workoutId, exerciseId, exrcIndex) => {
   return (dispatch) => {
     dispatch(deleteExerciseRequest())
@@ -463,27 +374,6 @@ export const deleteExercise = (token, workoutId, exerciseId, exrcIndex) => {
     )
     .then(response => response.json())
     .then(json => dispatch(deleteExerciseSuccess(json, exerciseId, exrcIndex)))
-  }
-}
-
-export const deleteWorkout = (token, workoutId, workoutIndex) => {
-  return (dispatch) => {
-    dispatch(deleteWorkoutRequest())
-    return fetch('/api/deleteworkout',
-      {
-        method: 'POST',
-        headers: new Headers(
-          {'content-type': 'application/json',
-          'Authorization': 'JWT ' + token}
-        ),
-        body: JSON.stringify({
-          type: 'DELETE_WORKOUT',
-          workoutId: workoutId
-        })
-      }
-    )
-    .then(response => response.json())
-    .then(json => dispatch(deleteWorkoutSuccess(json, workoutId, workoutIndex)))
   }
 }
 
@@ -516,5 +406,26 @@ export const addWorkout = (token) => {
     )
     .then(response => response.json())
     .then(json => dispatch(addWorkoutSuccess(json)))
+  }
+}
+
+export const deleteWorkout = (token, workoutId, workoutIndex) => {
+  return (dispatch) => {
+    dispatch(deleteWorkoutRequest())
+    return fetch('/api/deleteworkout',
+      {
+        method: 'POST',
+        headers: new Headers(
+          {'content-type': 'application/json',
+          'Authorization': 'JWT ' + token}
+        ),
+        body: JSON.stringify({
+          type: 'DELETE_WORKOUT',
+          workoutId: workoutId
+        })
+      }
+    )
+    .then(response => response.json())
+    .then(json => dispatch(deleteWorkoutSuccess(json, workoutId, workoutIndex)))
   }
 }

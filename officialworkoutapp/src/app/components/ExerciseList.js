@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router-dom';
+import {Link, withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {withCookies} from 'react-cookie';
-import {withRouter} from 'react-router-dom';
 
 import Exercise from './Exercise';
 import {addExercise, fetchExercises, clearExercises} from '../actions';
@@ -41,7 +40,7 @@ class ExerciseList extends React.Component {
           </div>
           <div className='row justify-content-center'>
             <div className='col-md-10'>
-              <button className='btn btn-primary btn-margin-top no-gutters' onClick={() => {
+              <button className='btn btn-primary btn-margin-top btn-margin-bottom no-gutters' onClick={() => {
                 if (this.footerExrcName.value !== '') {
                   this.props.onAddExercise(this.props.cookies.get('token'), this.props.workoutId, this.footerExrcName.value)
                   this.footerExrcName.value = '';
@@ -136,6 +135,16 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(clearExercises())
     }
   }
+};
+
+ExerciseList.propTypes = {
+  exercises: PropTypes.array.isRequired,
+  onAddExercise: PropTypes.func.isRequired,
+  onFetchExercises: PropTypes.func.isRequired,
+  onUnmount: PropTypes.func.isRequired,
+  workoutId: PropTypes.number.isRequired,
+  history: PropTypes.object.isRequired,
+  cookies: PropTypes.object.isRequired
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withCookies(ExerciseList)));
