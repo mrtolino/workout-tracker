@@ -63,11 +63,11 @@ router.post('/login', function(req, res, next) {
             var token = jwt.sign(payload, jwtOptions.secretOrKey, {expiresIn: '1h'});
             res.status(200).json({message: 'ok', token: token});
           } else {
-            res.status(401).json('Invalid credentials.');
+            res.status(401).json({message: 'Invalid credentials.'});
           }
         });
       } else {
-        res.status(401).json('Invalid credentials.');
+        res.status(401).json({message: 'Invalid credentials.'});
       }
     })
   }
@@ -142,7 +142,9 @@ router.post('/updateset', passport.authenticate('jwt', {session: false}), functi
           exerciseId: req.sanitize(req.body.exerciseId)
         }
       }).then(function(set) {
-        res.json(set);
+        res.json({message: 'success'});
+      }).catch(function(error) {
+        res.json({message: 'failed'})
       });
     }
   })
