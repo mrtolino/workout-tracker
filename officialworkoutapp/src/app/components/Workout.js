@@ -26,12 +26,24 @@ class Workout extends React.Component {
     this.onCloseConfirmationModal();
   }
 
+  renderWorkoutName() {
+    if (this.props.workout.name) {
+      return (
+        <p>{this.props.workout.name}</p>
+      );
+    } else {
+      return (
+        <p>{`Workout ${this.props.workoutIndex} `}</p>
+      );
+    }
+  }
+
   render() {
     return (
       <li className='list-group-item'>
         <div className='float-left'>
           <Link to={`/exercises/${this.props.workout.id}`}>
-            <p>{`Workout ${this.props.workout.id} `}</p>
+            {this.renderWorkoutName()}
           </Link>
           <p>{new Date(this.props.workout.date).toLocaleDateString('en-US')}</p>
         </div>

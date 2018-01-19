@@ -77,7 +77,7 @@ class LoginForm extends React.Component {
     ).then(response => response.json())
     .then(json => {
       if (json.message === 'ok') {
-        this.props.cookies.set('token', json.token);
+        this.props.cookies.set('token', json.token, {maxAge: 60 * 60});
         this.props.history.push('/workoutlist');
       } else {
         this.setState({

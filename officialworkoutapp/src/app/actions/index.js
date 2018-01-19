@@ -197,6 +197,7 @@ const fetchWorkoutsSuccess = (json) => {
       return {
         id: workout.id,
         date: workout.createdAt,
+        name: workout.name,
         exercises: []
       }
     })
@@ -215,6 +216,7 @@ const addWorkoutSuccess = (json) => {
     workout: {
       id: json.id,
       date: json.createdAt,
+      name: json.name,
       exercises: []
     }
   }
@@ -410,15 +412,20 @@ export const fetchWorkouts = (token) => {
   }
 }
 
-export const addWorkout = (token) => {
+export const addWorkout = (token, workoutName) => {
   return (dispatch) => {
     dispatch(addWorkoutRequest())
     return fetch('/api/addworkout',
       {
-        method: 'GET',
+        method: 'POST',
         headers: new Headers(
-          {'Authorization': 'JWT ' + token}
-        )
+          {'content-type': 'application/json',
+          'Authorization': 'JWT ' + token}
+        ),
+        body: JSON.stringify({
+          type: 'ADD_WORKOUT',
+          workoutName: workoutName
+        })
       }
     )
     .then(response => response.json())

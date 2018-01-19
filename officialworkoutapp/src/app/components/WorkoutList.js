@@ -11,6 +11,9 @@ class WorkoutList extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      workoutName: ''
+    };
   }
 
   componentWillMount() {
@@ -23,19 +26,35 @@ class WorkoutList extends React.Component {
     this.props.onFetchWorkouts(this.props.cookies.get('token'));
   }
 
+  onChangeWorkoutName(event) {
+    this.setState({
+      workoutName: event.target.value
+    })
+  }
+
+  onAddWorkoutSubmit() {
+    this.props.onAddWorkout(this.props.cookies.get('token'), this.state.workoutName);
+    this.setState({
+      workoutName: ''
+    });
+  }
+
   render() {
     return (
       <div className='container'>
         <div className='row justify-content-center'>
           <div className='col-md-8'>
-            <button className='btn btn-primary no-gutters' onClick={() => this.props.onAddWorkout(this.props.cookies.get('token'))}>
-              Add Workout
-            </button>
-            <button className='btn btn-primary no-gutters float-right' onClick={() => {
+            <button className='btn btn-primary btn-margin-bottom no-gutters float-right' onClick={() => {
               this.props.cookies.remove('token');
               this.props.history.push('/');
             }}>
               Logout
+            </button>
+            <input className='form-control input-margin-top' type='text' placeholder='workout name (optional)'
+              value={this.state.workoutName} onChange={(e) => this.onChangeWorkoutName(e)} />
+            <button className='btn btn-primary btn-margin-top no-gutters'
+              onClick={() => this.onAddWorkoutSubmit()}>
+              Add Workout
             </button>
           </div>
         </div>
@@ -63,7 +82,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAddWorkout: (token) => dispatch(addWorkout(token)),
+    onAddWorkout: (token, workoutName) => dispatch(addWorkout(token, workoutName)),
     onFetchWorkouts: (token) => dispatch(fetchWorkouts(token)),
     onDeleteWorkout: (token, workoutId, workoutIndex) => dispatch(deleteWorkout(token, workoutId, workoutIndex))
   };
