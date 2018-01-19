@@ -73,9 +73,10 @@ router.post('/login', function(req, res, next) {
   }
 });
 
-router.get('/addworkout', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+router.post('/addworkout', passport.authenticate('jwt', {session: false}), function(req, res, next) {
   models.workout.create({
-    userId: req.user.id
+    userId: req.user.id,
+    name: req.sanitize(req.body.workoutName)
   })
   .then(function(workout) {
     res.json(workout);
