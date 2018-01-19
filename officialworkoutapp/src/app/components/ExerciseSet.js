@@ -12,11 +12,13 @@ class ExerciseSet extends React.Component {
     super(props);
 
     this.state = {
-      weight: props.weight,
-      repetitions: props.repetitions,
+      weight: props.set.weight,
+      repetitions: props.set.repetitions,
       setSaved: true,
       setBeingDeleted: false,
-      renderConfirmationModal: false
+      renderConfirmationModal: false,
+      updateFailed: false,
+      updateSuccessful: false
     };
 
     this.handleWeightChange = this.handleWeightChange.bind(this);
@@ -27,17 +29,28 @@ class ExerciseSet extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.weight !== nextProps.weight || this.state.repetitions !== nextProps.repetitions) {
+    if (this.state.weight !== nextProps.set.weight || this.state.repetitions !== nextProps.set.repetitions) {
       this.setState({
-        weight: nextProps.weight,
-        repetitions: nextProps.repetitions
-      })
+        weight: nextProps.set.weight,
+        repetitions: nextProps.set.repetitions
+      });
+    }
+
+    if (nextProps.set.flag === 'update failed' && !this.state.updatedFailed) {
+      this.setState({
+        updateFailed: true
+      });
+    } else if (nextProps.set.flag === 'update successful' && !this.state.updateSuccessful) {
+      this.setState({
+        updateSuccessful: true
+      });
     }
   }
 
   componentWillUnmount() {
-    if (!this.state.setBeingDeleted && !this.state.setSaved)
+    if (!this.state.setBeingDeleted && !this.state.setSaved) {
       this.handleSubmit()
+    }
   }
 
   handleWeightChange(event) {
@@ -56,7 +69,7 @@ class ExerciseSet extends React.Component {
 
   handleSubmit() {
     this.props.onUpdateSet(this.props.cookies.get('token'), this.props.workoutId, this.props.exerciseId, this.props.index,
-                           this.props.setId, this.state.weight, this.state.repetitions);
+                           this.props.set.id, this.state.weight, this.state.repetitions);
     this.setState({
       setSaved: true
     });
@@ -67,7 +80,7 @@ class ExerciseSet extends React.Component {
       setBeingDeleted: true
     });
     this.props.onDeleteSet(this.props.cookies.get('token'), this.props.workoutId,
-                           this.props.exerciseId, this.props.setId, this.props.index);
+                           this.props.exerciseId, this.props.set.id, this.props.index);
     this.onCloseConfirmationModal();
   }
 
@@ -75,10 +88,42 @@ class ExerciseSet extends React.Component {
     this.setState({renderConfirmationModal: false});
   }
 
+  renderUpdateSetFailedAlert() {
+    if (this.state.updateFailed) {
+      setTimeout(() => {
+        this.setState({
+          updateFailed: false
+        })
+      }, 3000);
+      return (
+        <div className='alert alert-danger' role='alert'>
+          <strong>Oops!</strong> Please double check your input.
+        </div>
+      );
+    }
+  }
+
+  renderUpdateSetSuccessAlert() {
+    if (this.state.updateSuccessful) {
+      setTimeout(() => {
+        this.setState({
+          updateSuccessful: false
+        })
+      }, 3000);
+      return (
+        <div className='alert alert-success' role='alert'>
+          <strong>Success!</strong> Set saved.
+        </div>
+      );
+    }
+  }
+
   render() {
     return (
       <li className='list-group-item'>
         <div className='form-group'>
+          {this.renderUpdateSetFailedAlert()}
+          {this.renderUpdateSetSuccessAlert()}
           <h4 className='set-number'>{`Set ${this.props.index+1}`}</h4>
           <label className='set-data'>Weight:</label>
           <input className='form-control' type='number' name='weight' value={this.state.weight} min='0'
@@ -131,9 +176,7 @@ ExerciseSet.propTypes = {
   index: PropTypes.number.isRequired,
   workoutId: PropTypes.number.isRequired,
   exerciseId: PropTypes.number.isRequired,
-  setId: PropTypes.number.isRequired,
-  weight: PropTypes.number.isRequired,
-  repetitions: PropTypes.number.isRequired,
+  set: PropTypes.object.isRequired,
   onUpdateSet: PropTypes.func.isRequired,
   onDeleteSet: PropTypes.func.isRequired,
   cookies: PropTypes.object.isRequired

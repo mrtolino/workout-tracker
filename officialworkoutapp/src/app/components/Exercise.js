@@ -67,7 +67,7 @@ class Exercise extends React.Component {
               {this.props.exrc.exerciseSets.sort((set1, set2) => {
                 return set1.id > set2.id;
               }).map((set, index) => (<ExerciseSet key={index} index={index} workoutId={this.props.workoutId}
-                exerciseId={this.props.exrc.id} setId={set.id} weight={set.weight} repetitions={set.repetitions}/>))}
+                exerciseId={this.props.exrc.id} set={set} />))}
             </ul>
           </div>
         </div>

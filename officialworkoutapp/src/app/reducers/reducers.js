@@ -37,6 +37,22 @@ function sets (state = {}, action) {
         ]
       }
 
+    case 'UPDATE_SET_FAILURE':
+      if (state.id !== action.exerciseId)
+        return state;
+
+      return {
+        ...state,
+        exerciseSets: state.exerciseSets.map(
+          (set, index) => index === action.setArrayIndex ?
+            {
+              ...set,
+              flag: action.flag
+            }
+            : set
+        )
+      }
+
     case 'DELETE_SET_SUCCESS':
       if (state.id !== action.exerciseId)
         return state;
@@ -103,6 +119,8 @@ function exercises (state = [], action) {
     case 'UPDATE_SET_REQUEST':
       return state;
     case 'UPDATE_SET_SUCCESS':
+      return state.map(exrc => sets(exrc, action));
+    case 'UPDATE_SET_FAILURE':
       return state.map(exrc => sets(exrc, action));
     default:
       return state;

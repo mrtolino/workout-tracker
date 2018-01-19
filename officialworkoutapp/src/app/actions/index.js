@@ -8,6 +8,7 @@ const REQUEST_SETS = 'REQUEST_SETS';
 const RECEIVE_SETS = 'RECEIVE_SETS';
 const UPDATE_SET_REQUEST = 'UPDATE_SET_REQUEST';
 const UPDATE_SET_SUCCESS = 'UPDATE_SET_SUCCESS';
+const UPDATE_SET_FAILURE = 'UPDATE_SET_FAILURE';
 const ADD_SET_REQUEST = 'ADD_SET_REQUEST';
 const ADD_SET_SUCCESS = 'ADD_SET_SUCCESS';
 const DELETE_SET_REQUEST = 'DELETE_SET_REQUEST';
@@ -41,7 +42,8 @@ const receiveSets = (json, exerciseId) => {
       return {
         id: child.id,
         weight: child.weight,
-        repetitions: child.repetitions
+        repetitions: child.repetitions,
+        flag: 'set received'
       }
     })
   }
@@ -61,8 +63,18 @@ const updateSetSuccess = (set, exerciseId, setArrayIndex) => {
     set: {
       id: set.id,
       weight: set.weight,
-      repetitions: set.repetitions
+      repetitions: set.repetitions,
+      flag: 'update successful'
     }
+  }
+}
+
+const updateSetFailure = (exerciseId, setArrayIndex) => {
+  return {
+    type: UPDATE_SET_FAILURE,
+    exerciseId: exerciseId,
+    setArrayIndex: setArrayIndex,
+    flag: 'update failed'
   }
 }
 
@@ -302,12 +314,17 @@ export const updateSet = (token, workoutId, exerciseId, setArrayIndex, setId, we
       }
     )
     .then(response => response.json())
-    .then(json => { //TODO: Check if JSON response is successful or not
-      dispatch(updateSetSuccess({
-        id: setId,
-        weight: weight,
-        repetitions: repetitions
-      }, exerciseId, setArrayIndex))
+    .then(json => {
+      if (json.message === 'success') {
+        dispatch(updateSetSuccess({
+          id: setId,
+          weight: weight,
+          repetitions: repetitions
+        }, exerciseId, setArrayIndex))
+      }
+      else {
+        dispatch(updateSetFailure(exerciseId, setArrayIndex))
+      }
     })
   }
 }
