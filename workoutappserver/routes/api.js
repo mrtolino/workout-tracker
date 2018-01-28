@@ -1,6 +1,6 @@
 var models = require('../models/index');
 var express = require('express');
-var _ = require('lodash');
+// var _ = require('lodash');
 var jwt = require('jsonwebtoken');
 var passport = require('passport');
 var passportJWT = require('passport-jwt');
@@ -98,6 +98,32 @@ router.post('/addexercise', passport.authenticate('jwt', {session: false}), func
         workoutId: req.sanitize(req.body.workoutId)
       }).then(function(exrc) {
         res.json(exrc);
+      });
+    }
+  });
+});
+
+router.post('/updateexercisename', passport.authenticate('jwt', {session: false}), function(req, res, next) {
+  models.workout.findAll({
+    where: {
+      id: req.body.workoutId,
+      userId: req.user.id
+    }
+  }).then(function(workouts) {
+    if (workouts.length === 0) {
+      res.status(401).json('Invalid user.');
+    } else {
+      models.exercise.update({
+        name: req.sanitize(req.body.name)
+      }, {
+        where: {
+          id: req.body.exerciseId,
+          workoutId: req.body.workoutId
+        }
+      }).then(function(exrc) {
+        req.status(200).json({message: 'success'})
+      }).catch(function(error) {
+        req.status(400).json({message: 'failed'})
       });
     }
   });
@@ -218,6 +244,8 @@ router.post('/exercises', passport.authenticate('jwt', {session: false}), functi
         res.json(exrcs);
       });
     }
+  }).catch(function(error) {
+    res.status(400).json(error);
   })
 });
 
@@ -293,7 +321,9 @@ router.get('/workouts', passport.authenticate('jwt', {session: false}), function
       userId: req.user.id
     }
   }).then(function(workouts) {
-    res.json(workouts);
+    res.status(200).json(workouts);
+  }).catch(function(error) {
+    res.status(401).json("ERROR");
   });
 });
 
