@@ -68,8 +68,8 @@ class ExerciseSet extends React.Component {
   }
 
   handleSubmit() {
-    // this.props.onUpdateSet(this.props.cookies.get('token'), this.props.workoutId, this.props.exerciseId, this.props.index,
-    //                        this.props.set.id, this.state.weight, this.state.repetitions);
+    this.props.onUpdateSet(this.props.workoutId, this.props.exerciseId, this.props.set.id,
+      this.props.index, this.state.weight, this.state.repetitions);
     this.setState({
       setSaved: true
     });
@@ -79,8 +79,7 @@ class ExerciseSet extends React.Component {
     this.setState({
       setBeingDeleted: true
     });
-    // this.props.onDeleteSet(this.props.cookies.get('token'), this.props.workoutId,
-    //                        this.props.exerciseId, this.props.set.id, this.props.index);
+    this.props.onDeleteSet(this.props.workoutId, this.props.exerciseId, this.props.set.id, this.props.index);
     this.onCloseConfirmationModal();
   }
 
@@ -155,21 +154,21 @@ class ExerciseSet extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {};
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onUpdateSet: (token, workoutId, exerciseId, setArrayIndex, setId, weight, repetitions) => {
-      dispatch(updateSet(token, workoutId, exerciseId, setArrayIndex, setId, weight, repetitions))
-    }
-    ,
-    onDeleteSet: (token, workoutId, exerciseId, setId, setArrayIndex) => {
-      dispatch(deleteSet(token, workoutId, exerciseId, setId, setArrayIndex))
-    }
-  }
-};
+// const mapStateToProps = (state) => {
+//   return {};
+// };
+//
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     onUpdateSet: (token, workoutId, exerciseId, setArrayIndex, setId, weight, repetitions) => {
+//       dispatch(updateSet(token, workoutId, exerciseId, setArrayIndex, setId, weight, repetitions))
+//     }
+//     ,
+//     onDeleteSet: (token, workoutId, exerciseId, setId, setArrayIndex) => {
+//       dispatch(deleteSet(token, workoutId, exerciseId, setId, setArrayIndex))
+//     }
+//   }
+// };
 
 ExerciseSet.propTypes = {
   key: PropTypes.number,
@@ -182,4 +181,4 @@ ExerciseSet.propTypes = {
   cookies: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withCookies(ExerciseSet));
+export default withCookies(ExerciseSet);

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ExerciseSet from './ExerciseSet';
 import {connect} from 'react-redux';
+import gql from 'graphql-tag';
 import {withCookies} from 'react-cookie';
 import { withApollo } from 'react-apollo';
 
@@ -17,15 +18,21 @@ class Exercise extends React.Component {
       collapseText: 'Collapse',
       renderConfirmationModal: false,
       editExerciseName: false,
-      exrcName: this.props.exrc.name
+      exrcName: this.props.exrc.name,
+      sets: []
     };
 
     this.onCloseConfirmationModal = this.onCloseConfirmationModal.bind(this);
     this.onConfirmDelete = this.onConfirmDelete.bind(this);
+    this.onAddSet = this.onAddSet.bind(this);
+    this.onUpdateSet = this.onUpdateSet.bind(this);
+    this.onDeleteSet = this.onDeleteSet.bind(this);
   }
 
   componentDidMount() {
-    // this.props.onFetchSets(this.props.cookies.get('token'), this.props.workoutId, this.props.exrc.id);
+    this.setState({
+      sets: this.props.exrc.sets
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -52,6 +59,97 @@ class Exercise extends React.Component {
     })
   }
 
+  onUpdateSet(workoutId, exerciseId, setId, setIndex, weight, repetitions) {
+    this.props.client.mutate({
+      mutation: gql`
+        mutation UpdateSet($workoutId: Int!, $exerciseId: Int!, $setId: Int!, $weight: Float!, $repetitions: Int!) {
+          updateSet(workoutId: $workoutId, exerciseId: $exerciseId, setId: $setId, weight: $weight, repetitions: $repetitions) {
+            id,
+            weight,
+            repetitions
+          }
+        }
+      `,
+      variables: {
+        workoutId: workoutId,
+        exerciseId: exerciseId,
+        setId: setId,
+        weight: weight,
+        repetitions: repetitions
+      }
+    })
+    .then(response => {
+      if (response.data.updateSet) {
+        this.setState({
+          sets: [
+            ...this.state.sets.slice(0, setIndex),
+            response.data.updateSet,
+            ...this.state.sets.slice(setIndex + 1)
+          ]
+        })
+      } else {
+        // handle error
+      }
+    });
+  }
+
+  onAddSet(workoutId, exerciseId, weight, repetitions) {
+    this.props.client.mutate({
+      mutation: gql`
+        mutation AddSet($workoutId: Int!, $exerciseId: Int!, $weight: Float!, $repetitions: Int!) {
+          addSet(workoutId: $workoutId, exerciseId: $exerciseId, weight: $weight, repetitions: $repetitions) {
+            id,
+            weight,
+            repetitions
+          }
+        }
+      `,
+      variables: {
+        workoutId: workoutId,
+        exerciseId: exerciseId,
+        weight: weight,
+        repetitions: repetitions
+      }
+    })
+    .then(response => {
+      if (response.data.addSet) {
+        this.setState({
+          sets: [
+            ...this.state.sets,
+            response.data.addSet
+          ]
+        })
+      } else {
+        // handle error
+      }
+    });
+  }
+
+  onDeleteSet(workoutId, exerciseId, setId, setIndex) {
+    this.props.client.mutate({
+      mutation: gql`
+        mutation DeleteSet($workoutId: Int!, $exerciseId: Int!, $setId: Int!) {
+          deleteSet(workoutId: $workoutId, exerciseId: $exerciseId, setId: $setId)
+        }
+      `,
+      variables: {
+        workoutId: workoutId,
+        exerciseId: exerciseId,
+        setId: setId
+      }
+    })
+    .then(response => {
+      if (response.data.deleteSet === 'Success') {
+        this.setState({
+          sets: [
+            ...this.state.sets.slice(0, setIndex),
+            ...this.state.sets.slice(setIndex + 1)
+          ]
+        })
+      }
+    })
+  }
+
   onConfirmDelete() {
     this.props.onDeleteExercise(this.props.workoutId, this.props.exrc.id, this.props.exrcIndex);
     this.onCloseConfirmationModal();
@@ -69,8 +167,7 @@ class Exercise extends React.Component {
 
   onSubmitEditExrcName() {
     if (this.props.exrc.name !== this.state.exrcName) {
-      this.props.onUpdateExerciseName(this.props.cookies.get('token'), this.props.workoutId,
-                                      this.props.exrc.id, this.props.exrcIndex, this.state.exrcName);
+      this.props.onUpdateExerciseName(this.props.workoutId, this.props.exrc.id, this.props.exrcIndex, this.state.exrcName);
     }
     this.setState({
       editExerciseName: false
@@ -83,10 +180,12 @@ class Exercise extends React.Component {
         <div className='row'>
           <div className='col'>
             <ul className='list-group no-gutters'>
-              {this.props.exrc.sets.sort((set1, set2) => {
+              {this.state.sets.sort((set1, set2) => {
                 return set1.id > set2.id;
               }).map((set, index) => (<ExerciseSet key={set.id} index={index} workoutId={this.props.workoutId}
-                exerciseId={this.props.exrc.id} set={set} />))}
+                exerciseId={this.props.exrc.id} set={set}
+                onUpdateSet={this.onUpdateSet}
+                onDeleteSet={this.onDeleteSet} />))}
             </ul>
           </div>
         </div>
@@ -140,7 +239,7 @@ class Exercise extends React.Component {
         <div className='row'>
           <div className='col'>
             <button className='btn btn-primary float-left no-gutters' onClick={() => {
-              this.props.onAddSet(this.props.cookies.get('token'), this.props.workoutId, this.props.exrc.id, 0, 0)
+              this.onAddSet(this.props.workoutId, this.props.exrc.id, 0, 0)
             }}>
               Add Set
             </button>
@@ -191,9 +290,6 @@ Exercise.propTypes = {
   workoutId: PropTypes.number.isRequired,
   exrcIndex: PropTypes.number.isRequired,
   exrc: PropTypes.object.isRequired,
-  // onDeleteExercise: PropTypes.func.isRequired,
-  // onAddSet: PropTypes.func.isRequired,
-  // onFetchSets: PropTypes.func.isRequired,
   cookies: PropTypes.object.isRequired
 };
 

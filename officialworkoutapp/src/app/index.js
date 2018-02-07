@@ -85,9 +85,7 @@ const App = () => (
 render (
   <ApolloProvider client={client}>
     <CookiesProvider>
-      <Provider store={store}>
-        <App />
-      </Provider>
+      <App />
     </CookiesProvider>
   </ApolloProvider>,
   document.getElementById('root')

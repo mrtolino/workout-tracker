@@ -115,22 +115,28 @@ class LoginForm extends React.Component {
     if (this.state.password === this.state.reEnteredPassword &&
         (this.state.username.length > 0 && this.state.password.length > 0
         && this.state.fname.length > 0 && this.state.lname.length > 0)) {
-      fetch('/api/createaccount',
-        {
-          method: 'POST',
-          headers: new Headers({'content-type': 'application/json'}),
-          body: JSON.stringify({
-            type: 'CREATE_ACCOUNT',
-            username: this.state.username,
-            password: this.state.password,
-            fname: this.state.fname,
-            lname: this.state.lname
-          })
+
+      this.props.client.mutate({
+        mutation: gql`
+          mutation Register($username: String!, $password: String!, $fname: String!, $lname: String!) {
+            register(username: $username, password: $password, fname: $fname, lname: $lname) {
+              username
+            }
+          }
+        `,
+        variables: {
+          username: this.state.username,
+          password: this.state.password,
+          fname: this.state.fname,
+          lname: this.state.lname
         }
-      )
-      .then(response => response.json())
-      .then(() => {
-        this.onLoginSubmit();
+      })
+      .then(response => {
+        if (response.data.register.username === this.state.username) {
+          this.onLoginSubmit();
+        } else {
+          // show error alert
+        }
       });
 
       this.setState({

@@ -19,6 +19,7 @@ class ExerciseList extends React.Component {
     };
 
     this.onAddExercise = this.onAddExercise.bind(this);
+    this.onUpdateExerciseName = this.onUpdateExerciseName.bind(this);
     this.onDeleteExercise = this.onDeleteExercise.bind(this);
   }
 
@@ -54,12 +55,7 @@ class ExerciseList extends React.Component {
       this.setState({
         exercises: response.data.getExercises
       })
-      console.log(this.state.exercises);
     });
-  }
-
-  componentWillUnmount() {
-    // this.props.onUnmount();
   }
 
   onAddExercise(name, workoutId) {
@@ -114,6 +110,37 @@ class ExerciseList extends React.Component {
         })
       }
     });
+  }
+
+  onUpdateExerciseName(workoutId, exerciseId, exrcIndex, name) {
+    this.props.client.mutate({
+      mutation: gql`
+        mutation UpdateExerciseName($workoutId: Int!, $exerciseId: Int!, $name: String!) {
+          updateExerciseName(workoutId: $workoutId, exerciseId: $exerciseId, name: $name) {
+            name
+          }
+        }
+      `,
+      variables: {
+        workoutId: workoutId,
+        exerciseId: exerciseId,
+        name: name
+      }
+    })
+    .then(response => {
+      if (response.data.updateExerciseName.name === name) {
+        this.setState({
+          exercises: [
+            ...this.state.exercises.slice(0, exrcIndex),
+            {
+              ...this.state.exercises[exrcIndex],
+              name: name
+            },
+            ...this.state.exercises.slice(exrcIndex + 1)
+          ]
+        })
+      }
+    })
   }
 
   renderFooterExerciseNameInput() {
@@ -193,8 +220,8 @@ class ExerciseList extends React.Component {
           <div className='col-md-10'>
             <ul className='list-group no-gutters'>
               {this.state.exercises.map((exrc, index) => (
-                <Exercise key={index} workoutId={Number(this.props.match.params.workoutId)} exrcIndex={index}
-                  exrc={exrc} onDeleteExercise={this.onDeleteExercise}/>
+                <Exercise key={exrc.id} workoutId={Number(this.props.match.params.workoutId)} exrcIndex={index}
+                  exrc={exrc} onUpdateExerciseName={this.onUpdateExerciseName} onDeleteExercise={this.onDeleteExercise}/>
               ))}
             </ul>
           </div>
@@ -208,10 +235,6 @@ class ExerciseList extends React.Component {
 };
 
 ExerciseList.propTypes = {
-  // exercises: PropTypes.array.isRequired,
-  // onAddExercise: PropTypes.func.isRequired,
-  // onFetchExercises: PropTypes.func.isRequired,
-  // onUnmount: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   cookies: PropTypes.object.isRequired
 };
