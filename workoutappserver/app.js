@@ -12,6 +12,7 @@ const graphqlServer = require('graphql-server-express');
 const graphqlTools = require('graphql-tools');
 const jwt = require('jsonwebtoken');
 const api = require('./routes/api');
+const cors = require('cors');
 const models = require('./models/index');
 const typeDefs = require('./graphql/schema');
 const resolvers = require('./graphql/resolvers');
@@ -40,10 +41,14 @@ const userAuthMiddleware = async (req, res, next) => {
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(userAuthMiddleware);
-app.use(passport.initialize());
+// app.use(passport.initialize());
 app.use(compression());
 app.use(helmet());
 app.use(logger('dev'));
@@ -53,7 +58,7 @@ app.use(expressSanitizer());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api', api);
+// app.use('/api', api);
 app.use('/graphql',
   graphqlServer.graphqlExpress(req => ({
     schema: schema,

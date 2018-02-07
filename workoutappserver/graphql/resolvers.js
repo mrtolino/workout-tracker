@@ -120,7 +120,27 @@ module.exports = {
     }
   },
 
+  TestObject: {
+    message: (parent, args, context) => {
+      return parent;
+    }
+  },
+
   Query: {
+    user: async (parent, args, context) => {
+      const models = context.models;
+
+      if (context.userId) {
+        const result = await models.user.findOne({
+          where: {
+            id: context.userId
+          }
+        });
+        return result ? result : null;
+      } else {
+        return null;
+      }
+    },
     login: async (parent, args, context) => {
       const user = args;
       const models = context.models;
@@ -143,18 +163,38 @@ module.exports = {
         return 'Invalid credentials';
       }
     },
-    user: async (parent, args, context) => {
+    getWorkouts: async (parent, args, context) => {
       const models = context.models;
 
       if (context.userId) {
-        const result = await models.user.findOne({
+        const result = await models.workout.findAll({
           where: {
-            id: context.userId
+            userId: context.userId
           }
         });
         return result ? result : null;
       } else {
         return null;
+      }
+    },
+    getExercises: async (parent, args, context) => {
+      const models = context.models;
+
+      if (context.userId) {
+        const result = await models.workout.findAll({
+          where: {
+            id: args.workoutId,
+            userId: context.userId
+          }
+        });
+        if (result) {
+          const exercises = await models.exercise.findAll({
+            where: {
+              workoutId: args.workoutId
+            }
+          });
+          return exercises ? exercises : null;
+        }
       }
     }
   },
@@ -189,13 +229,34 @@ module.exports = {
         return "Invalid user";
       }
     },
+    updateWorkoutName: async (parent, args, context) => {
+      const models = context.models;
+
+      if (context.userId) {
+        const result = await models.workout.update(
+          {
+            name: args.name
+          },
+          {
+            where: {
+              id: args.workoutId,
+              userId: context.userId
+            },
+            returning: true
+          }
+        );
+        return result[0] === 1 ? result[1][0] : null;
+      } else {
+        return null;
+      }
+    },
     deleteWorkout: async (parent, args, context) => {
       const models = context.models;
 
       if (context.userId) {
         const result = await models.workout.destroy({
           where: {
-            id: args.id,
+            id: args.workoutId,
             userId: context.userId
           }
         });

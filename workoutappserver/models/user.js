@@ -6,13 +6,11 @@ module.exports = (sequelize, DataTypes) => {
     fname: DataTypes.STRING,
     lname: DataTypes.STRING
   }, {
-    classMethods: {
-      associate: function(models) {
-        user.hasMany(models.workout);
-      }
-    },
     freezeTableName: true,
     tableName: 'user'
   });
+  user.associate = function (models) {
+    user.hasMany(models.workout);
+  };
   return user;
 };

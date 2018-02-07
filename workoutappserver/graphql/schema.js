@@ -1,10 +1,5 @@
 module.exports = `
 
-  type QueryResult {
-    message: String!
-    value: String
-  }
-
   type Set {
     id: Int!
     weight: Float!
@@ -38,16 +33,22 @@ module.exports = `
     workouts: [Workout]
   }
 
+  type TestObject {
+    message: String!
+  }
+
   type Query {
     user: User
     login(username: String!, password: String!): String
+    getWorkouts: [Workout]
+    getExercises(workoutId: Int!): [Exercise]
   }
 
   type Mutation {
     register(username: String!, password: String!, fname: String!, lname: String!): User
     addWorkout(name: String): Workout
     updateWorkoutName(workoutId: Int!, name: String!): Workout
-    deleteWorkout(id: Int!): String!
+    deleteWorkout(workoutId: Int!): String!
     addExercise(name: String!, workoutId: Int!): Exercise
     updateExerciseName(workoutId: Int!, exerciseId: Int!, name: String!): Exercise
     deleteExercise(workoutId: Int!, exerciseId: Int!): String!
