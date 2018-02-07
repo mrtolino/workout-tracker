@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import ExerciseSet from './ExerciseSet';
 import {connect} from 'react-redux';
 import {withCookies} from 'react-cookie';
+import { withApollo } from 'react-apollo';
 
-import {deleteExercise, addSet, fetchSets} from '../actions';
+import {deleteExercise, addSet, fetchSets, updateExerciseName} from '../actions';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 class Exercise extends React.Component {
@@ -14,7 +15,9 @@ class Exercise extends React.Component {
     this.state = {
       collapse: false,
       collapseText: 'Collapse',
-      renderConfirmationModal: false
+      renderConfirmationModal: false,
+      editExerciseName: false,
+      exrcName: this.props.exrc.name
     };
 
     this.onCloseConfirmationModal = this.onCloseConfirmationModal.bind(this);
@@ -22,7 +25,7 @@ class Exercise extends React.Component {
   }
 
   componentDidMount() {
-    this.props.onFetchSets(this.props.cookies.get('token'), this.props.workoutId, this.props.exrc.id);
+    // this.props.onFetchSets(this.props.cookies.get('token'), this.props.workoutId, this.props.exrc.id);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -50,12 +53,28 @@ class Exercise extends React.Component {
   }
 
   onConfirmDelete() {
-    this.props.onDeleteExercise(this.props.cookies.get('token'), this.props.workoutId, this.props.exrc.id, this.props.exrcIndex);
+    this.props.onDeleteExercise(this.props.workoutId, this.props.exrc.id, this.props.exrcIndex);
     this.onCloseConfirmationModal();
   }
 
   onCloseConfirmationModal() {
     this.setState({renderConfirmationModal: false});
+  }
+
+  onExrcNameChange(event) {
+    this.setState({
+      exrcName: event.target.value
+    });
+  }
+
+  onSubmitEditExrcName() {
+    if (this.props.exrc.name !== this.state.exrcName) {
+      this.props.onUpdateExerciseName(this.props.cookies.get('token'), this.props.workoutId,
+                                      this.props.exrc.id, this.props.exrcIndex, this.state.exrcName);
+    }
+    this.setState({
+      editExerciseName: false
+    });
   }
 
   renderExerciseSets() {
@@ -64,13 +83,39 @@ class Exercise extends React.Component {
         <div className='row'>
           <div className='col'>
             <ul className='list-group no-gutters'>
-              {this.props.exrc.exerciseSets.sort((set1, set2) => {
+              {this.props.exrc.sets.sort((set1, set2) => {
                 return set1.id > set2.id;
-              }).map((set, index) => (<ExerciseSet key={index} index={index} workoutId={this.props.workoutId}
+              }).map((set, index) => (<ExerciseSet key={set.id} index={index} workoutId={this.props.workoutId}
                 exerciseId={this.props.exrc.id} set={set} />))}
             </ul>
           </div>
         </div>
+      );
+    }
+  }
+
+  renderExerciseName() {
+    if (this.state.editExerciseName) {
+      return (
+        <div className='row'>
+          <div className='col-8 padding-right-0'>
+            <input className='form-control' type='text' value={this.state.exrcName}
+              onChange={(e) => this.onExrcNameChange(e)} />
+          </div>
+          <div className='col-2 padding-left-0'>
+            <button className='btn btn-success no-gutters'
+              onClick={() => this.onSubmitEditExrcName()}>
+              ✓
+            </button>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <h2 className='exrc-name float-left no-gutters' onClick={() =>
+          this.setState({editExerciseName: true})}>
+          {`${this.props.exrc.name} `}
+        </h2>
       );
     }
   }
@@ -81,10 +126,10 @@ class Exercise extends React.Component {
 
         <div className='row'>
           <div className='col-10'>
-            <h2 className='exrc-name float-left no-gutters'>{`${this.props.exrc.name} `}</h2>
+            {this.renderExerciseName()}
           </div>
           <div className='col-2'>
-            <button className='btn btn-danger float-right no-gutters' onClick={() => {
+            <button className='btn btn-danger btn-margin-bottom float-right no-gutters' onClick={() => {
                 this.setState({renderConfirmationModal: true})
               }}>
               ×
@@ -120,33 +165,36 @@ class Exercise extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {};
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onDeleteExercise: (token, workoutId, exerciseId, exrcIndex) => {
-      dispatch(deleteExercise(token, workoutId, exerciseId, exrcIndex))
-    },
-    onAddSet: (token, workoutId, exerciseId, weight, repetitions) => {
-      dispatch(addSet(token, workoutId, exerciseId, weight, repetitions))
-    },
-    onFetchSets: (token, workoutId, exerciseId) => {
-      dispatch(fetchSets(token, workoutId, exerciseId))
-    }
-  };
-};
+// const mapStateToProps = (state) => {
+//   return {};
+// };
+//
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     onUpdateExerciseName: (token, workoutId, exerciseId, exrcIndex, name) => {
+//       dispatch(updateExerciseName(token, workoutId, exerciseId, exrcIndex, name))
+//     },
+//     onDeleteExercise: (token, workoutId, exerciseId, exrcIndex) => {
+//       dispatch(deleteExercise(token, workoutId, exerciseId, exrcIndex))
+//     },
+//     onAddSet: (token, workoutId, exerciseId, weight, repetitions) => {
+//       dispatch(addSet(token, workoutId, exerciseId, weight, repetitions))
+//     },
+//     onFetchSets: (token, workoutId, exerciseId) => {
+//       dispatch(fetchSets(token, workoutId, exerciseId))
+//     }
+//   };
+// };
 
 Exercise.propTypes = {
   key: PropTypes.number,
   workoutId: PropTypes.number.isRequired,
   exrcIndex: PropTypes.number.isRequired,
   exrc: PropTypes.object.isRequired,
-  onDeleteExercise: PropTypes.func.isRequired,
-  onAddSet: PropTypes.func.isRequired,
-  onFetchSets: PropTypes.func.isRequired,
+  // onDeleteExercise: PropTypes.func.isRequired,
+  // onAddSet: PropTypes.func.isRequired,
+  // onFetchSets: PropTypes.func.isRequired,
   cookies: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withCookies(Exercise));
+export default withApollo(withCookies(Exercise));

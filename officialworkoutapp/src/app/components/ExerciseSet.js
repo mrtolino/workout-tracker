@@ -29,12 +29,12 @@ class ExerciseSet extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.state.weight !== nextProps.set.weight || this.state.repetitions !== nextProps.set.repetitions) {
-      this.setState({
-        weight: nextProps.set.weight,
-        repetitions: nextProps.set.repetitions
-      });
-    }
+    // if (this.state.weight !== nextProps.set.weight || this.state.repetitions !== nextProps.set.repetitions) {
+    //   this.setState({
+    //     weight: nextProps.set.weight,
+    //     repetitions: nextProps.set.repetitions
+    //   });
+    // }
 
     if (nextProps.set.flag === 'update failed' && !this.state.updatedFailed) {
       this.setState({
@@ -68,8 +68,8 @@ class ExerciseSet extends React.Component {
   }
 
   handleSubmit() {
-    this.props.onUpdateSet(this.props.cookies.get('token'), this.props.workoutId, this.props.exerciseId, this.props.index,
-                           this.props.set.id, this.state.weight, this.state.repetitions);
+    // this.props.onUpdateSet(this.props.cookies.get('token'), this.props.workoutId, this.props.exerciseId, this.props.index,
+    //                        this.props.set.id, this.state.weight, this.state.repetitions);
     this.setState({
       setSaved: true
     });
@@ -79,8 +79,8 @@ class ExerciseSet extends React.Component {
     this.setState({
       setBeingDeleted: true
     });
-    this.props.onDeleteSet(this.props.cookies.get('token'), this.props.workoutId,
-                           this.props.exerciseId, this.props.set.id, this.props.index);
+    // this.props.onDeleteSet(this.props.cookies.get('token'), this.props.workoutId,
+    //                        this.props.exerciseId, this.props.set.id, this.props.index);
     this.onCloseConfirmationModal();
   }
 

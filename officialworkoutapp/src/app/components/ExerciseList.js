@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import {Link, withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import {withCookies} from 'react-cookie';
+import gql from 'graphql-tag';
+import { withApollo } from 'react-apollo';
 
 import Exercise from './Exercise';
 import {addExercise, fetchExercises, clearExercises} from '../actions';
@@ -11,6 +13,13 @@ class ExerciseList extends React.Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      exercises: []
+    };
+
+    this.onAddExercise = this.onAddExercise.bind(this);
+    this.onDeleteExercise = this.onDeleteExercise.bind(this);
   }
 
   componentWillMount() {
@@ -20,15 +29,95 @@ class ExerciseList extends React.Component {
   }
 
   componentDidMount() {
-    this.props.onFetchExercises(this.props.cookies.get('token'), this.props.workoutId);
+    this.props.client.query({
+      query: gql`
+        query FetchExercises($workoutId: Int!) {
+          getExercises(workoutId: $workoutId) {
+            id,
+            name,
+            sets {
+              id,
+              weight,
+              repetitions
+            }
+          }
+        }
+      `,
+      variables: {
+        workoutId: this.props.match.params.workoutId
+      },
+      options: {
+        fetchPolicy: 'cache-and-network'
+      }
+    })
+    .then(response => {
+      this.setState({
+        exercises: response.data.getExercises
+      })
+      console.log(this.state.exercises);
+    });
   }
 
   componentWillUnmount() {
-    this.props.onUnmount();
+    // this.props.onUnmount();
+  }
+
+  onAddExercise(name, workoutId) {
+    this.props.client.mutate({
+      mutation: gql`
+        mutation AddExercise($name: String!, $workoutId: Int!) {
+          addExercise(name: $name, workoutId: $workoutId) {
+            id,
+            name,
+            sets {
+              id,
+              weight,
+              repetitions
+            }
+          }
+        }
+      `,
+      variables: {
+        name: name,
+        workoutId: workoutId
+      }
+    })
+    .then(response => {
+      this.setState({
+        exercises: [
+          ...this.state.exercises,
+          response.data.addExercise
+        ]
+      });
+    });
+  }
+
+  onDeleteExercise(workoutId, exerciseId, exrcIndex) {
+    this.props.client.mutate({
+      mutation: gql`
+        mutation DeleteExercise($workoutId: Int!, $exerciseId: Int!) {
+          deleteExercise(workoutId: $workoutId, exerciseId: $exerciseId)
+        }
+      `,
+      variables: {
+        workoutId: workoutId,
+        exerciseId: exerciseId
+      }
+    })
+    .then(response => {
+      if (response.data.deleteExercise === 'Success') {
+        this.setState({
+          exercises: [
+            ...this.state.exercises.slice(0, exrcIndex),
+            ...this.state.exercises.slice(exrcIndex + 1)
+          ]
+        })
+      }
+    });
   }
 
   renderFooterExerciseNameInput() {
-    if (this.props.exercises.length > 0) {
+    if (this.state.exercises.length > 0) {
       return (
         <div>
           <div className='row justify-content-center'>
@@ -42,7 +131,7 @@ class ExerciseList extends React.Component {
             <div className='col-md-10'>
               <button className='btn btn-primary btn-margin-top btn-margin-bottom no-gutters' onClick={() => {
                 if (this.footerExrcName.value !== '') {
-                  this.props.onAddExercise(this.props.cookies.get('token'), this.props.workoutId, this.footerExrcName.value)
+                  this.onAddExercise(this.footerExrcName.value, this.props.match.params.workoutId)
                   this.footerExrcName.value = '';
                 }
               }}>
@@ -91,7 +180,7 @@ class ExerciseList extends React.Component {
           <div className='col-md-10'>
             <button className='btn btn-primary btn-margin-top no-gutters' onClick={() => {
               if (this.exrcName.value !== '') {
-                this.props.onAddExercise(this.props.cookies.get('token'), this.props.workoutId, this.exrcName.value)
+                this.onAddExercise(this.exrcName.value, this.props.match.params.workoutId);
                 this.exrcName.value = '';
               }
             }}>
@@ -103,8 +192,9 @@ class ExerciseList extends React.Component {
         <div className='row justify-content-center'>
           <div className='col-md-10'>
             <ul className='list-group no-gutters'>
-              {this.props.exercises.map((exrc, index) => (
-                <Exercise key={index} workoutId={this.props.workoutId} exrcIndex={index} exrc={exrc} />
+              {this.state.exercises.map((exrc, index) => (
+                <Exercise key={index} workoutId={Number(this.props.match.params.workoutId)} exrcIndex={index}
+                  exrc={exrc} onDeleteExercise={this.onDeleteExercise}/>
               ))}
             </ul>
           </div>
@@ -117,34 +207,13 @@ class ExerciseList extends React.Component {
   }
 };
 
-const mapStateToProps = (state) => {
-  return {
-    exercises: state.exercises
-  }
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onAddExercise: (token, workoutId, name) => {
-      dispatch(addExercise(token, workoutId, name))
-    },
-    onFetchExercises: (token, workoutId) => {
-      dispatch(fetchExercises(token, workoutId))
-    },
-    onUnmount: () => {
-      dispatch(clearExercises())
-    }
-  }
-};
-
 ExerciseList.propTypes = {
-  exercises: PropTypes.array.isRequired,
-  onAddExercise: PropTypes.func.isRequired,
-  onFetchExercises: PropTypes.func.isRequired,
-  onUnmount: PropTypes.func.isRequired,
-  workoutId: PropTypes.number.isRequired,
+  // exercises: PropTypes.array.isRequired,
+  // onAddExercise: PropTypes.func.isRequired,
+  // onFetchExercises: PropTypes.func.isRequired,
+  // onUnmount: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   cookies: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withCookies(ExerciseList)));
+export default withApollo(withRouter(withCookies(ExerciseList)));

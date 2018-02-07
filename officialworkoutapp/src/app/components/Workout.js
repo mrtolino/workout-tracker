@@ -22,7 +22,7 @@ class Workout extends React.Component {
   }
 
   onConfirmDelete() {
-    this.props.onDeleteWorkout(this.props.cookies.get('token'), this.props.workout.id, this.props.workoutIndex)
+    this.props.onDeleteWorkout(this.props.workout.id, this.props.workoutIndex)
     this.onCloseConfirmationModal();
   }
 

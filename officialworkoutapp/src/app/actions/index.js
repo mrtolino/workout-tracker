@@ -17,6 +17,8 @@ const ADD_EXERCISE_REQUEST = 'ADD_EXERCISE_REQUEST';
 const ADD_EXERCISE_SUCCESS = 'ADD_EXERCISE_SUCCESS';
 const DELETE_EXERCISE_REQUEST = 'DELETE_EXERCISE_REQUEST';
 const DELETE_EXERCISE_SUCCESS = 'DELETE_EXERCISE_SUCCESS';
+const UPDATE_EXERCISE_NAME_REQUEST = 'UPDATE_EXERCISE_NAME_REQUEST';
+const UPDATE_EXERCISE_NAME_SUCCESS = 'UPDATE_EXERCISE_NAME_SUCCESS';
 const DELETE_WORKOUT_REQUEST = 'DELETE_WORKOUT_REQUEST';
 const DELETE_WORKOUT_SUCCESS = 'DELETE_WORKOUT_SUCCESS';
 const FETCH_WORKOUTS_REQUEST = 'FETCH_WORKOUTS_REQUEST';
@@ -167,6 +169,21 @@ const deleteExerciseSuccess = (json, exerciseId, exrcIndex) => {
     type: DELETE_EXERCISE_SUCCESS,
     exerciseId: exerciseId,
     exrcIndex: exrcIndex
+  }
+}
+
+const updateExerciseNameRequest = () => {
+  return {
+    type: UPDATE_EXERCISE_NAME_REQUEST
+  }
+}
+
+const updateExerciseNameSuccess = (exerciseId, exrcIndex, name) => {
+  return {
+    type: UPDATE_EXERCISE_NAME_SUCCESS,
+    exerciseId: exerciseId,
+    exrcIndex: exrcIndex,
+    name: name
   }
 }
 
@@ -393,6 +410,29 @@ export const deleteExercise = (token, workoutId, exerciseId, exrcIndex) => {
     )
     .then(response => response.json())
     .then(json => dispatch(deleteExerciseSuccess(json, exerciseId, exrcIndex)))
+  }
+}
+
+export const updateExerciseName = (token, workoutId, exerciseId, exrcIndex, name) => {
+  return (dispatch) => {
+    dispatch(updateExerciseNameRequest())
+    return fetch('/api/updateexercisename',
+      {
+        method: 'POST',
+        headers: new Headers(
+          {'content-type': 'application/json',
+           'Authorization': 'JWT ' + token}
+        ),
+        body: JSON.stringify({
+          type: 'UPDATE_EXERCISE_NAME',
+          workoutId: workoutId,
+          exerciseId: exerciseId,
+          name: name
+        })
+      }
+    )
+    .then(response => response.json())
+    .then(json => dispatch(updateExerciseNameSuccess(exerciseId, exrcIndex, name)))
   }
 }
 

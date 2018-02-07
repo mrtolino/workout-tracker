@@ -1,19 +1,27 @@
-import React from 'react';
+import { connect } from 'react-redux';
+import gql from 'graphql-tag';
+import { graphql, withApollo } from 'react-apollo';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { withCookies } from 'react-cookie';
+import { withRouter } from 'react-router-dom';
 import Workout from './Workout';
-import {connect} from 'react-redux';
-import {withCookies} from 'react-cookie';
-import {withRouter} from 'react-router-dom';
 
-import {addWorkout, fetchWorkouts, deleteWorkout} from '../actions';
+import { addWorkout, fetchWorkouts, deleteWorkout } from '../actions';
 
 class WorkoutList extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      workoutName: ''
+      workoutName: '',
+      loading: true,
+      workouts: []
     };
+
+    this.onAddWorkout = this.onAddWorkout.bind(this);
+    this.onDeleteWorkout = this.onDeleteWorkout.bind(this);
+    this.onChangeWorkoutName = this.onChangeWorkoutName.bind(this);
   }
 
   componentWillMount() {
@@ -22,21 +30,71 @@ class WorkoutList extends React.Component {
     }
   }
 
-  componentDidMount() {
-    this.props.onFetchWorkouts(this.props.cookies.get('token'));
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.data.loading) {
+      this.setState({
+        loading: false,
+        workouts: nextProps.data.getWorkouts
+      })
+    }
+  }
+
+  onAddWorkout() {
+    this.props.client.mutate({
+      mutation: gql`
+        mutation AddWorkout($name: String) {
+          addWorkout(name: $name) {
+            id,
+            date,
+            name
+          }
+        }
+      `,
+      variables: {
+        name: this.state.workoutName
+      }
+    })
+    .then(response => {
+      this.setState({
+        workouts: [
+          ...this.state.workouts,
+          response.data.addWorkout
+        ]
+      })
+    });
+
+    this.setState({
+      workoutName: ''
+    });
+  }
+
+  onDeleteWorkout(workoutId, workoutIndex) {
+    this.props.client.mutate({
+      mutation: gql`
+        mutation DeleteWorkout($workoutId: Int!) {
+          deleteWorkout(workoutId: $workoutId)
+        }
+      `,
+      variables: {
+        workoutId: workoutId
+      }
+    })
+    .then(response => {
+      if (response.data.deleteWorkout === 'Success') {
+        this.setState({
+          workouts: [
+            ...this.state.workouts.slice(0, workoutIndex),
+            ...this.state.workouts.slice(workoutIndex + 1)
+          ]
+        })
+      }
+    })
   }
 
   onChangeWorkoutName(event) {
     this.setState({
       workoutName: event.target.value
     })
-  }
-
-  onAddWorkoutSubmit() {
-    this.props.onAddWorkout(this.props.cookies.get('token'), this.state.workoutName);
-    this.setState({
-      workoutName: ''
-    });
   }
 
   render() {
@@ -51,9 +109,9 @@ class WorkoutList extends React.Component {
               Logout
             </button>
             <input className='form-control input-margin-top' type='text' placeholder='workout name (optional)'
-              value={this.state.workoutName} onChange={(e) => this.onChangeWorkoutName(e)} />
+              value={this.state.workoutName} onChange={this.onChangeWorkoutName} />
             <button className='btn btn-primary btn-margin-top no-gutters'
-              onClick={() => this.onAddWorkoutSubmit()}>
+              onClick={this.onAddWorkout}>
               Add Workout
             </button>
           </div>
@@ -62,8 +120,8 @@ class WorkoutList extends React.Component {
           <div className='col-md-8'>
             <ul className='list-group no-gutters'>
               {
-                this.props.workouts.map((workout, index) => (
-                  <Workout key={index} workout={workout} workoutIndex={index} onDeleteWorkout={this.props.onDeleteWorkout} />
+                this.state.workouts.map((workout, index) => (
+                  <Workout key={workout.id} workout={workout} workoutIndex={index} onDeleteWorkout={this.onDeleteWorkout} />
                 ))
               }
             </ul>
@@ -74,27 +132,25 @@ class WorkoutList extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    workouts: state.workouts
-  }
-};
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onAddWorkout: (token, workoutName) => dispatch(addWorkout(token, workoutName)),
-    onFetchWorkouts: (token) => dispatch(fetchWorkouts(token)),
-    onDeleteWorkout: (token, workoutId, workoutIndex) => dispatch(deleteWorkout(token, workoutId, workoutIndex))
-  };
-};
-
 WorkoutList.propTypes = {
-  workouts: PropTypes.array.isRequired,
-  onAddWorkout: PropTypes.func.isRequired,
-  onFetchWorkouts: PropTypes.func.isRequired,
-  onDeleteWorkout: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   cookies: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(withCookies(WorkoutList)));
+const FETCH_WORKOUTS_QUERY = gql`
+  query FetchWorkouts {
+    getWorkouts {
+      id,
+      date,
+      name
+    }
+  },
+`;
+
+export default graphql(FETCH_WORKOUTS_QUERY,
+  {
+    options: {
+      fetchPolicy: 'cache-and-network'
+    }
+  }
+)(withApollo(withRouter(withCookies(WorkoutList))));

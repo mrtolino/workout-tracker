@@ -3,21 +3,27 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Link, withRouter} from 'react-router-dom';
 import {withCookies, Cookies} from 'react-cookie';
+import {withApollo} from 'react-apollo';
+import gql from 'graphql-tag';
 
 import WorkoutList from './WorkoutList';
 
 class LoginForm extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       username: '',
       password: '',
+      reEnteredPassword: '',
       fname: '',
       lname: '',
       createAccount: false,
       loginError: false,
       loginErrorMessage: '',
-      loading: false
+      loading: false,
+      passwordMatchAlert: false,
+      filloutFieldsAlert: false
     };
   }
 
@@ -51,6 +57,12 @@ class LoginForm extends React.Component {
     });
   }
 
+  onChangeReEnterPW(event) {
+    this.setState({
+      reEnteredPassword: event.target.value
+    })
+  }
+
   onChangeFirstName(event) {
     this.setState({
       fname: event.target.value
@@ -64,65 +76,86 @@ class LoginForm extends React.Component {
   }
 
   onLoginSubmit() {
-    fetch('/api/login',
-      {
-        method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
-        body: JSON.stringify({
-          type: 'LOGIN_AUTH',
+    if (this.state.username.length > 0 && this.state.password.length > 0) {
+      this.props.client.query({
+        query: gql`
+          query LoginQuery($username: String!, $password: String!) {
+            login(username: $username, password: $password)
+          }
+        `,
+        variables: {
           username: this.state.username,
           password: this.state.password
-        })
-      }
-    ).then(response => response.json())
-    .then(json => {
-      if (json.message === 'ok') {
-        this.props.cookies.set('token', json.token, {maxAge: 60 * 60});
-        this.props.history.push('/workoutlist');
-      } else {
-        this.setState({
-          loginError: true,
-          loginErrorMessage: json.message,
-          loading: false
-        });
-      }
-    })
+        }
+      })
+      .then(response => {
+        if (response.data.login) {
+          this.props.cookies.set('token', response.data.login, {maxAge: 60 * 60});
+          this.props.history.push('/workoutlist');
+        } else {
+          this.setState({
+            loginError: true,
+            loginErrorMessage: 'Invalid credentials.',
+            loading: false
+          });
+        }
+      });
 
-    this.setState({
-      loading: true
-    });
+      this.setState({
+        loading: true
+      });
+    } else {
+      this.setState({
+        filloutFieldsAlert: true
+      })
+    }
   }
 
   onCreateAccountSubmit() {
-    fetch('/api/createaccount',
-      {
-        method: 'POST',
-        headers: new Headers({'content-type': 'application/json'}),
-        body: JSON.stringify({
-          type: 'CREATE_ACCOUNT',
-          username: this.state.username,
-          password: this.state.password,
-          fname: this.state.fname,
-          lname: this.state.lname
+    if (this.state.password === this.state.reEnteredPassword &&
+        (this.state.username.length > 0 && this.state.password.length > 0
+        && this.state.fname.length > 0 && this.state.lname.length > 0)) {
+      fetch('/api/createaccount',
+        {
+          method: 'POST',
+          headers: new Headers({'content-type': 'application/json'}),
+          body: JSON.stringify({
+            type: 'CREATE_ACCOUNT',
+            username: this.state.username,
+            password: this.state.password,
+            fname: this.state.fname,
+            lname: this.state.lname
+          })
+        }
+      )
+      .then(response => response.json())
+      .then(() => {
+        this.onLoginSubmit();
+      });
+
+      this.setState({
+        passwordMatchAlert: false
+      });
+    } else {
+      if (this.state.password !== this.state.reEnteredPassword) {
+        this.setState({
+          passwordMatchAlert: true,
+          filloutFieldsAlert: false
+        });
+      } else {
+        this.setState({
+          filloutFieldsAlert: true,
+          passwordMatchAlert: false
         })
       }
-    )
-    .then(response => response.json())
-    .then(() => {
-      this.onLoginSubmit();
-    });
-
-    this.setState({
-      loading: true
-    });
+    }
   }
 
-  renderLoginProgressBar() {
-    if (this.state.loading) {
+  renderPasswordMatchAlert() {
+    if (this.state.passwordMatchAlert) {
       return (
-        <div className='progress'>
-          <div className='progress-bar progress-bar-striped progress-bar-animated prog-bar-width' role='progressbar'
-            aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'></div>
+        <div className='alert alert-danger' role='alert'>
+          <strong>Oops!</strong> Your passwords don't match.
         </div>
       );
     }
@@ -138,6 +171,28 @@ class LoginForm extends React.Component {
     }
   }
 
+  renderFilloutFieldsAlert() {
+    if (this.state.filloutFieldsAlert) {
+      return (
+        <div className='alert alert-danger' role='alert'>
+          Please make sure to fill out all fields.
+        </div>
+      );
+    }
+  }
+
+  renderLoginProgressBar() {
+    if (this.state.loading) {
+      return (
+        <div className='progress'>
+          <div className='progress-bar progress-bar-striped progress-bar-animated prog-bar-width' role='progressbar'
+            aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'>
+          </div>
+        </div>
+      );
+    }
+  }
+
   renderCreateAccountForm() {
     if (this.state.createAccount) {
       return (
@@ -146,12 +201,31 @@ class LoginForm extends React.Component {
             onChange={(e) => this.onChangeUsername(e)} />
           <input className='form-control input-margin-top' type='password' placeholder='password'
             onChange={(e) => this.onChangePassword(e)} />
-          <input className='form-control input-margin-top' type='text' placeholder='first name' onChange={(e) => this.onChangeFirstName(e)} />
-          <input className='form-control input-margin-top' type='text' placeholder='last name' onChange={(e) => this.onChangeLastName(e)} />
+          <input className='form-control input-margin-top' type='password' placeholder='re-enter password'
+            onChange={(e) => this.onChangeReEnterPW(e)} />
+          <input className='form-control input-margin-top' type='text' placeholder='first name'
+            onChange={(e) => this.onChangeFirstName(e)} />
+          <input className='form-control input-margin-top' type='text' placeholder='last name'
+            onChange={(e) => this.onChangeLastName(e)} />
           <input className='btn btn-primary btn-block btn-margin-top no-gutters' type='button' value='Create my account!'
             onClick={() => this.onCreateAccountSubmit()} />
           <input className='btn btn-secondary btn-block btn-margin-top no-gutters' type='button' value='Already have an account?'
-            onClick={() => this.onLoginForm()} />
+            onClick={() => {
+              this.setState({
+                username: '',
+                password: '',
+                reEnteredPassword: '',
+                fname: '',
+                lname: '',
+                createAccount: false,
+                loginError: false,
+                loginErrorMessage: '',
+                loading: false,
+                passwordMatchAlert: false,
+                filloutFieldsAlert: false
+              });
+              return this.onLoginForm();
+            }} />
         </div>
       );
     }
@@ -160,15 +234,30 @@ class LoginForm extends React.Component {
   renderLoginForm() {
     if (!this.state.createAccount) {
       return (
-        <div className='form-group'>
-          <input className='form-control' type='text' placeholder='username'
+        <div className='cell medium-8'>
+          <input className='' type='text' placeholder='username'
             onChange={(e) => this.onChangeUsername(e)} />
-          <input className='form-control input-margin-top' type='password' placeholder='password'
+          <input className='' type='password' placeholder='password'
             onChange={(e) => this.onChangePassword(e)} />
-          <input className='btn btn-primary btn-block btn-margin-top no-gutters' type='button' value='Login'
+          <input className='hollow button' type='button' value='Login'
             onClick={() => this.onLoginSubmit()} />
-          <input className='btn btn-secondary btn-block btn-margin-top no-gutters' type='button' value='Create Account'
-            onClick={() => this.onCreateAccountForm()} />
+          <input className='hollow button' type='button' value='Create Account'
+            onClick={() => {
+              this.setState({
+                username: '',
+                password: '',
+                reEnteredPassword: '',
+                fname: '',
+                lname: '',
+                createAccount: false,
+                loginError: false,
+                loginErrorMessage: '',
+                loading: false,
+                passwordMatchAlert: false,
+                filloutFieldsAlert: false
+              });
+              return this.onCreateAccountForm();
+            }} />
         </div>
       );
     }
@@ -176,21 +265,21 @@ class LoginForm extends React.Component {
 
   render() {
     return (
-      <div className='row justify-content-center'>
-        <div className='col-md-8'>
-          {this.renderLoginErrorAlert()}
-          {this.renderLoginForm()}
-          {this.renderCreateAccountForm()}
-          {this.renderLoginProgressBar()}
-        </div>
+      <div className='grid-x grid-margin-x'>
+        {this.renderFilloutFieldsAlert()}
+        {this.renderPasswordMatchAlert()}
+        {this.renderLoginErrorAlert()}
+        {this.renderLoginForm()}
+        {this.renderCreateAccountForm()}
+        {this.renderLoginProgressBar()}
       </div>
     );
   }
-};
+}
 
 LoginForm.propTypes = {
   history: PropTypes.object.isRequired,
   cookies: PropTypes.object.isRequired
 };
 
-export default withRouter(withCookies(LoginForm));
+export default withApollo(withRouter(withCookies(LoginForm)));

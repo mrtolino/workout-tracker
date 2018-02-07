@@ -111,6 +111,21 @@ function exercises (state = [], action) {
     case 'REQUEST_EXERCISES':
       return state;
 
+    case 'UPDATE_EXERCISE_NAME_REQUEST':
+      return state;
+
+    case 'UPDATE_EXERCISE_NAME_SUCCESS':
+      return state.map((exrc, i) => {
+        if (action.exrcIndex === i) {
+          return {
+            ...exrc,
+            name: action.name
+          };
+        } else {
+          return exrc;
+        }
+      });
+
     case 'RECEIVE_SETS':
       return state.map(exrc => sets(exrc, action));
 
