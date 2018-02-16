@@ -1,0 +1,207 @@
+@import 'settings';
+@import 'foundation';
+
+@include foundation-everything;
+
+/*IN USE*/
+*:focus {
+  outline: none;
+}
+.ReactModal__Overlay {
+  -webkit-perspective: 600;
+  perspective: 600;
+  opacity: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+}
+
+.ReactModal__Overlay--after-open {
+  opacity: 1;
+  transition: opacity 150ms ease-out;
+}
+
+.ReactModal__Content {
+  -webkit-transform: scale(0.5) rotateX(-30deg);
+  transform: scale(0.5) rotateX(-30deg);
+  color: #4286f4;
+}
+
+.ReactModal__Content--after-open {
+  -webkit-transform: scale(1) rotateX(0deg);
+  transform: scale(1) rotateX(0deg) translateY(150px);
+  transition: all 150ms ease-in;
+}
+
+.ReactModal__Overlay--before-close {
+  opacity: 0;
+}
+
+.ReactModal__Content--before-close {
+  -webkit-transform: scale(0.5) rotateX(30deg);
+  transform: scale(0.5) rotateX(30deg);
+  transition: all 150ms ease-in;
+}
+
+.ReactModal__Content.modal-dialog {
+  border: 2px solid #4286f4;
+  border-radius: 10px;
+  width: 40%;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: $white;
+}
+
+@media screen and (max-width: 480px) {
+  .ReactModal__Content.modal-dialog {
+    width: 90%;
+  }
+}
+@media screen and (min-width: 481px) and (max-width: 1024px) {
+  .ReactModal__Content.modal-dialog {
+    width: 70%;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: $white;
+}
+
+.list-group {
+  list-style-type: none;
+  display: grid;
+  width: 100%;
+  margin: 0;
+  background-color: $white;
+  border-radius: 10px;
+}
+.list-group:empty {
+  border: none;
+}
+.list-group-item {
+  border-bottom: 1px solid $gray1;
+  padding: 10px;
+  width: 100%;
+}
+.list-group-item:first-child {
+  border-radius: 10px 10px 0 0;
+}
+.list-group-item:last-child {
+  border-bottom: 0;
+  border-radius: 0 0 10px 10px;
+}
+.list-group-item:only-child {
+  border-radius: 10px;
+}
+.clickable:hover {
+  background-color: $gray2;
+  cursor: pointer;
+}
+.bordered {
+  border: 1px solid $gray1;
+}
+.title {
+  text-align: center;
+  color: $white;
+}
+.btn-margin-right {
+  margin-right: 20px;
+}
+.btn-margin-left {
+  margin-left: 20px;
+}
+.btn-margin-top {
+  margin-top: 5px;
+}
+/*IN USE*/
+
+// ul {
+//   margin: 20px;
+// }
+button {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.padding-left-0 {
+  padding-left: 0;
+}
+.padding-right-0 {
+  padding-right: 0;
+}
+.prog-bar-width {
+  width: 100%;
+}
+.input-margin-top {
+  margin-top: 10px;
+}
+.exrc-name {
+  color: #0a46a8;
+}
+.set-number {
+  color: #760293;
+}
+
+.float-right-custom {
+  float: right;
+}
+.float-left-custom {
+  float: left;
+}
+.exrc-name-label {
+  color: white;
+  margin-top: 20px;
+}
+@media screen and (max-width: 480px) {
+  .exrc-name {
+    font-size: 22px;
+  }
+  .set-number {
+    font-size: 18px;
+  }
+  .set-data {
+    font-size: 16px;
+  }
+  .float-right-custom {
+    float: none;
+  }
+  .float-left-custom {
+    float: none;
+  }
+  .btn-center {
+    text-align: center;
+  }
+}
+@media screen and (min-width: 480px) {
+  .exrc-name {
+    font-size: 24px;
+  }
+  .set-number {
+    font-size: 20px;
+  }
+  .set-data {
+    font-size: 16px;
+  }
+}
+@media screen and (min-width: 768px) {
+  .exrc-name {
+    font-size: 28px;
+  }
+  .set-number {
+    font-size: 22px;
+  }
+  .set-data {
+    font-size: 18px;
+  }
+}
+@media screen and (min-width: 1024px) {
+  .exrc-name {
+    font-size: 32px;
+  }
+  .set-number {
+    font-size: 24px;
+  }
+  .set-data {
+    font-size: 18px;
+  }
+}

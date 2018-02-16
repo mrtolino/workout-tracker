@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {Link, withRouter} from 'react-router-dom';
-import {withCookies, Cookies} from 'react-cookie';
-import {withApollo} from 'react-apollo';
+import { connect } from 'react-redux';
+import { Link, withRouter } from 'react-router-dom';
+import { withCookies, Cookies } from 'react-cookie';
+import { withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import WorkoutList from './WorkoutList';
@@ -23,7 +23,7 @@ class LoginForm extends React.Component {
       loginErrorMessage: '',
       loading: false,
       passwordMatchAlert: false,
-      filloutFieldsAlert: false
+      filloutFieldsAlert: false,
     };
   }
 
@@ -35,44 +35,44 @@ class LoginForm extends React.Component {
 
   onCreateAccountForm() {
     this.setState({
-      createAccount: true
-    })
+      createAccount: true,
+    });
   }
 
   onLoginForm() {
     this.setState({
-      createAccount: false
-    })
+      createAccount: false,
+    });
   }
 
   onChangeUsername(event) {
     this.setState({
-      username: event.target.value
+      username: event.target.value,
     });
   }
 
   onChangePassword(event) {
     this.setState({
-      password: event.target.value
+      password: event.target.value,
     });
   }
 
   onChangeReEnterPW(event) {
     this.setState({
-      reEnteredPassword: event.target.value
-    })
+      reEnteredPassword: event.target.value,
+    });
   }
 
   onChangeFirstName(event) {
     this.setState({
-      fname: event.target.value
-    })
+      fname: event.target.value,
+    });
   }
 
   onChangeLastName(event) {
     this.setState({
-      lname: event.target.value
-    })
+      lname: event.target.value,
+    });
   }
 
   onLoginSubmit() {
@@ -85,29 +85,44 @@ class LoginForm extends React.Component {
         `,
         variables: {
           username: this.state.username,
-          password: this.state.password
-        }
+          password: this.state.password,
+        },
       })
-      .then(response => {
-        if (response.data.login) {
-          this.props.cookies.set('token', response.data.login, {maxAge: 60 * 60});
-          this.props.history.push('/workoutlist');
-        } else {
-          this.setState({
-            loginError: true,
-            loginErrorMessage: 'Invalid credentials.',
-            loading: false
-          });
-        }
-      });
+        .then((response) => {
+          if (response.data.login) {
+            this.props.cookies.set('token', response.data.login, { maxAge: 60 * 60 });
+            this.props.client.query({
+              query: gql`
+                query UserQuery {
+                  user {
+                    fname,
+                    lname
+                  }
+                }
+              `
+            })
+              .then((response) => {
+                if (response.data.user) {
+                  this.props.cookies.set('name', `${response.data.user.fname} ${response.data.user.lname}`, { maxAge: 60 * 60 });
+                }
+                this.props.history.push('/workoutlist');
+              })
+          } else {
+            this.setState({
+              loginError: true,
+              loginErrorMessage: 'Invalid credentials.',
+              loading: false,
+            });
+          }
+        });
 
       this.setState({
-        loading: true
+        loading: true,
       });
     } else {
       this.setState({
-        filloutFieldsAlert: true
-      })
+        filloutFieldsAlert: true,
+      });
     }
   }
 
@@ -115,7 +130,6 @@ class LoginForm extends React.Component {
     if (this.state.password === this.state.reEnteredPassword &&
         (this.state.username.length > 0 && this.state.password.length > 0
         && this.state.fname.length > 0 && this.state.lname.length > 0)) {
-
       this.props.client.mutate({
         mutation: gql`
           mutation Register($username: String!, $password: String!, $fname: String!, $lname: String!) {
@@ -128,39 +142,37 @@ class LoginForm extends React.Component {
           username: this.state.username,
           password: this.state.password,
           fname: this.state.fname,
-          lname: this.state.lname
-        }
+          lname: this.state.lname,
+        },
       })
-      .then(response => {
-        if (response.data.register.username === this.state.username) {
-          this.onLoginSubmit();
-        } else {
+        .then((response) => {
+          if (response.data.register.username === this.state.username) {
+            this.onLoginSubmit();
+          } else {
           // show error alert
-        }
-      });
+          }
+        });
 
       this.setState({
-        passwordMatchAlert: false
+        passwordMatchAlert: false,
+      });
+    } else if (this.state.password !== this.state.reEnteredPassword) {
+      this.setState({
+        passwordMatchAlert: true,
+        filloutFieldsAlert: false,
       });
     } else {
-      if (this.state.password !== this.state.reEnteredPassword) {
-        this.setState({
-          passwordMatchAlert: true,
-          filloutFieldsAlert: false
-        });
-      } else {
-        this.setState({
-          filloutFieldsAlert: true,
-          passwordMatchAlert: false
-        })
-      }
+      this.setState({
+        filloutFieldsAlert: true,
+        passwordMatchAlert: false,
+      });
     }
   }
 
   renderPasswordMatchAlert() {
     if (this.state.passwordMatchAlert) {
       return (
-        <div className='alert alert-danger' role='alert'>
+        <div className="alert alert-danger" role="alert">
           <strong>Oops!</strong> Your passwords don't match.
         </div>
       );
@@ -170,7 +182,7 @@ class LoginForm extends React.Component {
   renderLoginErrorAlert() {
     if (this.state.loginError) {
       return (
-        <div className='alert alert-danger' role='alert'>
+        <div className="alert alert-danger" role="alert">
           <strong>Oops!</strong> {this.state.loginErrorMessage}
         </div>
       );
@@ -180,7 +192,7 @@ class LoginForm extends React.Component {
   renderFilloutFieldsAlert() {
     if (this.state.filloutFieldsAlert) {
       return (
-        <div className='alert alert-danger' role='alert'>
+        <div className="alert alert-danger" role="alert">
           Please make sure to fill out all fields.
         </div>
       );
@@ -190,10 +202,14 @@ class LoginForm extends React.Component {
   renderLoginProgressBar() {
     if (this.state.loading) {
       return (
-        <div className='progress'>
-          <div className='progress-bar progress-bar-striped progress-bar-animated prog-bar-width' role='progressbar'
-            aria-valuenow='100' aria-valuemin='0' aria-valuemax='100'>
-          </div>
+        <div className="progress">
+          <div
+            className="progress-bar progress-bar-striped progress-bar-animated prog-bar-width"
+            role="progressbar"
+            aria-valuenow="100"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          />
         </div>
       );
     }
@@ -202,20 +218,47 @@ class LoginForm extends React.Component {
   renderCreateAccountForm() {
     if (this.state.createAccount) {
       return (
-        <div className='form-group'>
-          <input className='form-control' type='text' placeholder='username'
-            onChange={(e) => this.onChangeUsername(e)} />
-          <input className='form-control input-margin-top' type='password' placeholder='password'
-            onChange={(e) => this.onChangePassword(e)} />
-          <input className='form-control input-margin-top' type='password' placeholder='re-enter password'
-            onChange={(e) => this.onChangeReEnterPW(e)} />
-          <input className='form-control input-margin-top' type='text' placeholder='first name'
-            onChange={(e) => this.onChangeFirstName(e)} />
-          <input className='form-control input-margin-top' type='text' placeholder='last name'
-            onChange={(e) => this.onChangeLastName(e)} />
-          <input className='btn btn-primary btn-block btn-margin-top no-gutters' type='button' value='Create my account!'
-            onClick={() => this.onCreateAccountSubmit()} />
-          <input className='btn btn-secondary btn-block btn-margin-top no-gutters' type='button' value='Already have an account?'
+        <div className="medium-8 medium-offset-2 cell">
+          <input
+            className=""
+            type="text"
+            placeholder="username"
+            onChange={e => this.onChangeUsername(e)}
+          />
+          <input
+            className=""
+            type="password"
+            placeholder="password"
+            onChange={e => this.onChangePassword(e)}
+          />
+          <input
+            className=""
+            type="password"
+            placeholder="re-enter password"
+            onChange={e => this.onChangeReEnterPW(e)}
+          />
+          <input
+            className=""
+            type="text"
+            placeholder="first name"
+            onChange={e => this.onChangeFirstName(e)}
+          />
+          <input
+            className=""
+            type="text"
+            placeholder="last name"
+            onChange={e => this.onChangeLastName(e)}
+          />
+          <input
+            className="hollow button radius btn-margin-right"
+            type="button"
+            value="Create my account!"
+            onClick={() => this.onCreateAccountSubmit()}
+          />
+          <input
+            className="hollow button radius"
+            type="button"
+            value="Already have an account?"
             onClick={() => {
               this.setState({
                 username: '',
@@ -228,10 +271,11 @@ class LoginForm extends React.Component {
                 loginErrorMessage: '',
                 loading: false,
                 passwordMatchAlert: false,
-                filloutFieldsAlert: false
+                filloutFieldsAlert: false,
               });
               return this.onLoginForm();
-            }} />
+            }}
+          />
         </div>
       );
     }
@@ -240,14 +284,29 @@ class LoginForm extends React.Component {
   renderLoginForm() {
     if (!this.state.createAccount) {
       return (
-        <div className='cell medium-8'>
-          <input className='' type='text' placeholder='username'
-            onChange={(e) => this.onChangeUsername(e)} />
-          <input className='' type='password' placeholder='password'
-            onChange={(e) => this.onChangePassword(e)} />
-          <input className='hollow button' type='button' value='Login'
-            onClick={() => this.onLoginSubmit()} />
-          <input className='hollow button' type='button' value='Create Account'
+        <div className="medium-8 medium-offset-2 cell">
+          <input
+            className=""
+            type="text"
+            placeholder="username"
+            onChange={e => this.onChangeUsername(e)}
+          />
+          <input
+            className=""
+            type="password"
+            placeholder="password"
+            onChange={e => this.onChangePassword(e)}
+          />
+          <input
+            className="hollow button radius btn-margin-right"
+            type="button"
+            value="Login"
+            onClick={() => this.onLoginSubmit()}
+          />
+          <input
+            className="hollow button radius"
+            type="button"
+            value="Create Account"
             onClick={() => {
               this.setState({
                 username: '',
@@ -260,10 +319,11 @@ class LoginForm extends React.Component {
                 loginErrorMessage: '',
                 loading: false,
                 passwordMatchAlert: false,
-                filloutFieldsAlert: false
+                filloutFieldsAlert: false,
               });
               return this.onCreateAccountForm();
-            }} />
+            }}
+          />
         </div>
       );
     }
@@ -271,7 +331,7 @@ class LoginForm extends React.Component {
 
   render() {
     return (
-      <div className='grid-x grid-margin-x'>
+      <div className="grid-x grid-margin-x">
         {this.renderFilloutFieldsAlert()}
         {this.renderPasswordMatchAlert()}
         {this.renderLoginErrorAlert()}
@@ -285,7 +345,7 @@ class LoginForm extends React.Component {
 
 LoginForm.propTypes = {
   history: PropTypes.object.isRequired,
-  cookies: PropTypes.object.isRequired
+  cookies: PropTypes.object.isRequired,
 };
 
 export default withApollo(withRouter(withCookies(LoginForm)));

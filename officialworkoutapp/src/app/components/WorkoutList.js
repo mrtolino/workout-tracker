@@ -10,13 +10,12 @@ import Workout from './Workout';
 import { addWorkout, fetchWorkouts, deleteWorkout } from '../actions';
 
 class WorkoutList extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
       workoutName: '',
       loading: true,
-      workouts: []
+      workouts: [],
     };
 
     this.onAddWorkout = this.onAddWorkout.bind(this);
@@ -34,8 +33,8 @@ class WorkoutList extends React.Component {
     if (!nextProps.data.loading) {
       this.setState({
         loading: false,
-        workouts: nextProps.data.getWorkouts
-      })
+        workouts: nextProps.data.getWorkouts,
+      });
     }
   }
 
@@ -46,25 +45,26 @@ class WorkoutList extends React.Component {
           addWorkout(name: $name) {
             id,
             date,
-            name
+            name,
+            createdAt
           }
         }
       `,
       variables: {
-        name: this.state.workoutName
-      }
+        name: this.state.workoutName,
+      },
     })
-    .then(response => {
-      this.setState({
-        workouts: [
-          ...this.state.workouts,
-          response.data.addWorkout
-        ]
-      })
-    });
+      .then((response) => {
+        this.setState({
+          workouts: [
+            ...this.state.workouts,
+            response.data.addWorkout,
+          ],
+        });
+      });
 
     this.setState({
-      workoutName: ''
+      workoutName: '',
     });
   }
 
@@ -76,49 +76,61 @@ class WorkoutList extends React.Component {
         }
       `,
       variables: {
-        workoutId: workoutId
-      }
+        workoutId,
+      },
     })
-    .then(response => {
-      if (response.data.deleteWorkout === 'Success') {
-        this.setState({
-          workouts: [
-            ...this.state.workouts.slice(0, workoutIndex),
-            ...this.state.workouts.slice(workoutIndex + 1)
-          ]
-        })
-      }
-    })
+      .then((response) => {
+        if (response.data.deleteWorkout === 'Success') {
+          this.setState({
+            workouts: [
+              ...this.state.workouts.slice(0, workoutIndex),
+              ...this.state.workouts.slice(workoutIndex + 1),
+            ],
+          });
+        }
+      });
   }
 
   onChangeWorkoutName(event) {
     this.setState({
-      workoutName: event.target.value
-    })
+      workoutName: event.target.value,
+    });
   }
 
   render() {
     return (
-      <div className='container'>
-        <div className='row justify-content-center'>
-          <div className='col-md-8'>
-            <button className='btn btn-primary btn-margin-bottom no-gutters float-right' onClick={() => {
+      <div className="grid-container">
+        <div className="grid-x grid-margin-x">
+          <div className="medium-8 medium-offset-2 cell">
+            <button
+              className="hollow button float-right btn-margin-left"
+              onClick={() => {
               this.props.cookies.remove('token');
+              this.props.cookies.remove('name');
               this.props.history.push('/');
-            }}>
+            }}
+            >
               Logout
             </button>
-            <input className='form-control input-margin-top' type='text' placeholder='workout name (optional)'
-              value={this.state.workoutName} onChange={this.onChangeWorkoutName} />
-            <button className='btn btn-primary btn-margin-top no-gutters'
-              onClick={this.onAddWorkout}>
+            <h4 className="float-right">{this.props.cookies.get('name')}, </h4>
+            <input
+              className=""
+              type="text"
+              placeholder="workout name (optional)"
+              value={this.state.workoutName}
+              onChange={this.onChangeWorkoutName}
+            />
+            <button
+              className="hollow button"
+              onClick={this.onAddWorkout}
+            >
               Add Workout
             </button>
           </div>
         </div>
-        <div className='row justify-content-center'>
-          <div className='col-md-8'>
-            <ul className='list-group no-gutters'>
+        <div className="grid-x grid-margin-x">
+          <div className="medium-8 medium-offset-2 cell">
+            <ul className="list-group">
               {
                 this.state.workouts.map((workout, index) => (
                   <Workout key={workout.id} workout={workout} workoutIndex={index} onDeleteWorkout={this.onDeleteWorkout} />
@@ -134,7 +146,7 @@ class WorkoutList extends React.Component {
 
 WorkoutList.propTypes = {
   history: PropTypes.object.isRequired,
-  cookies: PropTypes.object.isRequired
+  cookies: PropTypes.object.isRequired,
 };
 
 const FETCH_WORKOUTS_QUERY = gql`
@@ -142,15 +154,17 @@ const FETCH_WORKOUTS_QUERY = gql`
     getWorkouts {
       id,
       date,
-      name
+      name,
+      createdAt
     }
   },
 `;
 
-export default graphql(FETCH_WORKOUTS_QUERY,
+export default graphql(
+  FETCH_WORKOUTS_QUERY,
   {
     options: {
-      fetchPolicy: 'cache-and-network'
-    }
-  }
+      fetchPolicy: 'cache-and-network',
+    },
+  },
 )(withApollo(withRouter(withCookies(WorkoutList))));

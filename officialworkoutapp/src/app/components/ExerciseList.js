@@ -1,21 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Link, withRouter} from 'react-router-dom';
-import {connect} from 'react-redux';
-import {withCookies} from 'react-cookie';
+import { Link, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withCookies } from 'react-cookie';
 import gql from 'graphql-tag';
 import { withApollo } from 'react-apollo';
 
 import Exercise from './Exercise';
-import {addExercise, fetchExercises, clearExercises} from '../actions';
+import { addExercise, fetchExercises, clearExercises } from '../actions';
 
 class ExerciseList extends React.Component {
-
   constructor(props) {
     super(props);
 
     this.state = {
-      exercises: []
+      exercises: [],
     };
 
     this.onAddExercise = this.onAddExercise.bind(this);
@@ -45,17 +44,17 @@ class ExerciseList extends React.Component {
         }
       `,
       variables: {
-        workoutId: this.props.match.params.workoutId
+        workoutId: this.props.match.params.workoutId,
       },
       options: {
-        fetchPolicy: 'cache-and-network'
-      }
+        fetchPolicy: 'cache-and-network',
+      },
     })
-    .then(response => {
-      this.setState({
-        exercises: response.data.getExercises
-      })
-    });
+      .then((response) => {
+        this.setState({
+          exercises: response.data.getExercises,
+        });
+      });
   }
 
   onAddExercise(name, workoutId) {
@@ -74,18 +73,18 @@ class ExerciseList extends React.Component {
         }
       `,
       variables: {
-        name: name,
-        workoutId: workoutId
-      }
+        name,
+        workoutId,
+      },
     })
-    .then(response => {
-      this.setState({
-        exercises: [
-          ...this.state.exercises,
-          response.data.addExercise
-        ]
+      .then((response) => {
+        this.setState({
+          exercises: [
+            ...this.state.exercises,
+            response.data.addExercise,
+          ],
+        });
       });
-    });
   }
 
   onDeleteExercise(workoutId, exerciseId, exrcIndex) {
@@ -96,20 +95,20 @@ class ExerciseList extends React.Component {
         }
       `,
       variables: {
-        workoutId: workoutId,
-        exerciseId: exerciseId
-      }
+        workoutId,
+        exerciseId,
+      },
     })
-    .then(response => {
-      if (response.data.deleteExercise === 'Success') {
-        this.setState({
-          exercises: [
-            ...this.state.exercises.slice(0, exrcIndex),
-            ...this.state.exercises.slice(exrcIndex + 1)
-          ]
-        })
-      }
-    });
+      .then((response) => {
+        if (response.data.deleteExercise === 'Success') {
+          this.setState({
+            exercises: [
+              ...this.state.exercises.slice(0, exrcIndex),
+              ...this.state.exercises.slice(exrcIndex + 1),
+            ],
+          });
+        }
+      });
   }
 
   onUpdateExerciseName(workoutId, exerciseId, exrcIndex, name) {
@@ -122,46 +121,55 @@ class ExerciseList extends React.Component {
         }
       `,
       variables: {
-        workoutId: workoutId,
-        exerciseId: exerciseId,
-        name: name
-      }
+        workoutId,
+        exerciseId,
+        name,
+      },
     })
-    .then(response => {
-      if (response.data.updateExerciseName.name === name) {
-        this.setState({
-          exercises: [
-            ...this.state.exercises.slice(0, exrcIndex),
-            {
-              ...this.state.exercises[exrcIndex],
-              name: name
-            },
-            ...this.state.exercises.slice(exrcIndex + 1)
-          ]
-        })
-      }
-    })
+      .then((response) => {
+        if (response.data.updateExerciseName.name === name) {
+          this.setState({
+            exercises: [
+              ...this.state.exercises.slice(0, exrcIndex),
+              {
+                ...this.state.exercises[exrcIndex],
+                name,
+              },
+              ...this.state.exercises.slice(exrcIndex + 1),
+            ],
+          });
+        }
+      });
   }
 
   renderFooterExerciseNameInput() {
     if (this.state.exercises.length > 0) {
       return (
         <div>
-          <div className='row justify-content-center'>
-            <div className='col-md-10'>
-              <input className='form-control input-margin-top' placeholder='Enter a name' maxLength='30' ref={node => {
+          <div className="grid-x grid-margin-x">
+            <div className="medium-10 medium-offset-1 cell">
+              <input
+                className="input-margin-top"
+                type="text"
+                placeholder="Enter a name"
+                maxLength="30"
+                ref={(node) => {
                 this.footerExrcName = node;
-              }} />
+              }}
+              />
             </div>
           </div>
-          <div className='row justify-content-center'>
-            <div className='col-md-10'>
-              <button className='btn btn-primary btn-margin-top btn-margin-bottom no-gutters' onClick={() => {
+          <div className="grid-x grid-margin-x">
+            <div className="medium-10 medium-offset-1 cell">
+              <button
+                className="hollow button"
+                onClick={() => {
                 if (this.footerExrcName.value !== '') {
-                  this.onAddExercise(this.footerExrcName.value, this.props.match.params.workoutId)
+                  this.onAddExercise(this.footerExrcName.value, this.props.match.params.workoutId);
                   this.footerExrcName.value = '';
                 }
-              }}>
+              }}
+              >
                 Add Exercise
               </button>
             </div>
@@ -173,55 +181,74 @@ class ExerciseList extends React.Component {
 
   render() {
     return (
-      <div className='container'>
+      <div className="grid-container">
 
-        <div className='row justify-content-center'>
-          <div className='col-md-10'>
-            <button className='btn btn-primary btn-margin-top no-gutters float-right' onClick={() => {
+        <div className="grid-x grid-margin-x">
+          <div className="medium-10 medium-offset-1 cell">
+            <button
+              className="hollow button float-right"
+              onClick={() => {
               this.props.cookies.remove('token');
+              this.props.cookies.remove('name');
               this.props.history.push('/');
-            }}>
+            }}
+            >
               Logout
             </button>
-            <Link to={'/workoutlist'}>
-              <button className='btn btn-primary btn-margin-top no-gutters float-left'>Back to Workout List</button>
+            <Link to="/workoutlist">
+              <button className="hollow button float-left">Back to Workout List</button>
             </Link>
           </div>
         </div>
 
-        <div className='row justify-content-center'>
-          <div className='col-md-10'>
-            <h4 className='exrc-name-label'>Exercise Name: </h4>
+        <div className="grid-x grid-margin-x">
+          <div className="medium-10 medium-offset-1 cell">
+            <h4 className="exrc-name-label">Exercise Name: </h4>
           </div>
         </div>
 
-        <div className='row justify-content-center'>
-          <div className='col-md-10'>
-            <input className='form-control' placeholder='Enter a name' maxLength='30' ref={node => {
+        <div className="grid-x grid-margin-x">
+          <div className="medium-10 medium-offset-1 cell">
+            <input
+              className=""
+              type="text"
+              placeholder="Enter a name"
+              maxLength="30"
+              ref={(node) => {
               this.exrcName = node;
-            }} />
+            }}
+            />
           </div>
         </div>
 
-        <div className='row justify-content-center'>
-          <div className='col-md-10'>
-            <button className='btn btn-primary btn-margin-top no-gutters' onClick={() => {
+        <div className="grid-x grid-margin-x">
+          <div className="medium-10 medium-offset-1 cell">
+            <button
+              className="hollow button"
+              onClick={() => {
               if (this.exrcName.value !== '') {
                 this.onAddExercise(this.exrcName.value, this.props.match.params.workoutId);
                 this.exrcName.value = '';
               }
-            }}>
+            }}
+            >
               Add Exercise
             </button>
           </div>
         </div>
 
-        <div className='row justify-content-center'>
-          <div className='col-md-10'>
-            <ul className='list-group no-gutters'>
+        <div className="grid-x grid-margin-x">
+          <div className="medium-10 medium-offset-1 cell">
+            <ul className="list-group">
               {this.state.exercises.map((exrc, index) => (
-                <Exercise key={exrc.id} workoutId={Number(this.props.match.params.workoutId)} exrcIndex={index}
-                  exrc={exrc} onUpdateExerciseName={this.onUpdateExerciseName} onDeleteExercise={this.onDeleteExercise}/>
+                <Exercise
+                  key={exrc.id}
+                  workoutId={Number(this.props.match.params.workoutId)}
+                  exrcIndex={index}
+                  exrc={exrc}
+                  onUpdateExerciseName={this.onUpdateExerciseName}
+                  onDeleteExercise={this.onDeleteExercise}
+                />
               ))}
             </ul>
           </div>
@@ -232,11 +259,11 @@ class ExerciseList extends React.Component {
       </div>
     );
   }
-};
+}
 
 ExerciseList.propTypes = {
   history: PropTypes.object.isRequired,
-  cookies: PropTypes.object.isRequired
+  cookies: PropTypes.object.isRequired,
 };
 
 export default withApollo(withRouter(withCookies(ExerciseList)));

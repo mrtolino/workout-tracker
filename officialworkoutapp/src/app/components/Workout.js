@@ -1,28 +1,29 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Link} from 'react-router-dom';
-import {withCookies} from 'react-cookie';
+import { Link } from 'react-router-dom';
+import { withCookies } from 'react-cookie';
+import { withRouter } from 'react-router';
 
 import DeleteConfirmationModal from './DeleteConfirmationModal';
 
 class Workout extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
-      renderConfirmationModal: false
+      renderConfirmationModal: false,
     };
 
     this.onCloseConfirmationModal = this.onCloseConfirmationModal.bind(this);
     this.onConfirmDelete = this.onConfirmDelete.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
   onCloseConfirmationModal() {
-    this.setState({renderConfirmationModal: false});
+    this.setState({ renderConfirmationModal: false });
   }
 
   onConfirmDelete() {
-    this.props.onDeleteWorkout(this.props.workout.id, this.props.workoutIndex)
+    this.props.onDeleteWorkout(this.props.workout.id, this.props.workoutIndex);
     this.onCloseConfirmationModal();
   }
 
@@ -31,25 +32,34 @@ class Workout extends React.Component {
       return (
         <p>{this.props.workout.name}</p>
       );
-    } else {
-      return (
-        <p>{`Workout ${this.props.workoutIndex} `}</p>
-      );
+    }
+    return (
+      <p>{`Workout ${this.props.workoutIndex} `}</p>
+    );
+  }
+
+  handleClick(e) {
+    if (e.target.id === 'deleteWorkoutBtn') {
+      this.setState({
+        renderConfirmationModal: true
+      })
+    } else if (!this.state.renderConfirmationModal) {
+      this.props.history.push(`/exercises/${this.props.workout.id}`)
     }
   }
 
   render() {
     return (
-      <li className='list-group-item'>
-        <div className='float-left'>
-          <Link to={`/exercises/${this.props.workout.id}`}>
-            {this.renderWorkoutName()}
-          </Link>
-          <p>{new Date(this.props.workout.date).toLocaleDateString('en-US')}</p>
+      <li className="list-group-item clickable" onClick={this.handleClick}>
+        <div className="float-left">
+          {this.renderWorkoutName()}
+          <p>{new Date(this.props.workout.createdAt).toLocaleDateString('en-US')}</p>
         </div>
-        <div className='float-right'>
-          <button className='btn btn-danger'
-            onClick={() => this.setState({renderConfirmationModal: true})}>
+        <div className="float-right">
+          <button
+            id="deleteWorkoutBtn"
+            className="hollow button alert"
+          >
             Delete
           </button>
         </div>
@@ -59,7 +69,6 @@ class Workout extends React.Component {
           onCloseConfirmationModal={this.onCloseConfirmationModal}
           onConfirmDelete={this.onConfirmDelete}
         />
-
       </li>
     );
   }
@@ -70,7 +79,7 @@ Workout.propTypes = {
   workout: PropTypes.object.isRequired,
   workoutIndex: PropTypes.number.isRequired,
   onDeleteWorkout: PropTypes.func.isRequired,
-  cookies: PropTypes.object.isRequired
+  cookies: PropTypes.object.isRequired,
 };
 
-export default withCookies(Workout);
+export default withRouter(withCookies(Workout));

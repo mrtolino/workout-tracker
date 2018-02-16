@@ -1,85 +1,78 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 
-//sets reducer
-function sets (state = {}, action) {
-  switch(action.type) {
+// sets reducer
+function sets(state = {}, action) {
+  switch (action.type) {
     case 'RECEIVE_SETS':
-      if (state.id !== action.exerciseId)
-        return state;
+      if (state.id !== action.exerciseId) { return state; }
 
       return {
         ...state,
-        exerciseSets: action.sets
-      }
+        exerciseSets: action.sets,
+      };
 
     case 'ADD_SET_SUCCESS':
-      if (state.id !== action.exerciseId)
-        return state;
+      if (state.id !== action.exerciseId) { return state; }
 
       return {
         ...state,
         exerciseSets: [
           ...state.exerciseSets,
-          action.set
-        ]
-      }
+          action.set,
+        ],
+      };
 
     case 'UPDATE_SET_SUCCESS':
-      if (state.id !== action.exerciseId)
-        return state;
+      if (state.id !== action.exerciseId) { return state; }
 
       return {
         ...state,
         exerciseSets: [
           ...state.exerciseSets.slice(0, action.setArrayIndex),
           action.set,
-          ...state.exerciseSets.slice(action.setArrayIndex + 1)
-        ]
-      }
+          ...state.exerciseSets.slice(action.setArrayIndex + 1),
+        ],
+      };
 
     case 'UPDATE_SET_FAILURE':
-      if (state.id !== action.exerciseId)
-        return state;
+      if (state.id !== action.exerciseId) { return state; }
 
       return {
         ...state,
-        exerciseSets: state.exerciseSets.map(
-          (set, index) => index === action.setArrayIndex ?
-            {
-              ...set,
-              flag: action.flag
-            }
-            : set
-        )
-      }
+        exerciseSets: state.exerciseSets.map((set, index) => (index === action.setArrayIndex ?
+          {
+            ...set,
+            flag: action.flag,
+          }
+          : set)),
+      };
 
     case 'DELETE_SET_SUCCESS':
-      if (state.id !== action.exerciseId)
-        return state;
+      if (state.id !== action.exerciseId) { return state; }
 
       return {
         ...state,
         exerciseSets: [
           ...state.exerciseSets.slice(0, action.setArrayIndex),
-          ...state.exerciseSets.slice(action.setArrayIndex + 1)
-        ]
-      }
+          ...state.exerciseSets.slice(action.setArrayIndex + 1),
+        ],
+      };
 
     default:
       return state;
   }
-};
+}
 
-//exercises reducer
-function exercises (state = [], action) {
-  switch(action.type) {
+// exercises reducer
+function exercises(state = [], action) {
+  switch (action.type) {
     case 'ADD_EXERCISE_REQUEST':
       return state;
 
     case 'ADD_EXERCISE_SUCCESS':
       return [
         ...state,
-        action.exercise
+        action.exercise,
       ];
 
     case 'ADD_SET_REQUEST':
@@ -97,7 +90,7 @@ function exercises (state = [], action) {
     case 'DELETE_EXERCISE_SUCCESS':
       return [
         ...state.slice(0, action.exrcIndex),
-        ...state.slice(action.exrcIndex + 1)
+        ...state.slice(action.exrcIndex + 1),
       ];
 
     case 'DELETE_SET_REQUEST':
@@ -119,11 +112,10 @@ function exercises (state = [], action) {
         if (action.exrcIndex === i) {
           return {
             ...exrc,
-            name: action.name
+            name: action.name,
           };
-        } else {
-          return exrc;
         }
+        return exrc;
       });
 
     case 'RECEIVE_SETS':
@@ -140,16 +132,16 @@ function exercises (state = [], action) {
     default:
       return state;
   }
-};
+}
 
-function workouts (state = [], action) {
-  switch(action.type) {
+function workouts(state = [], action) {
+  switch (action.type) {
     case 'ADD_WORKOUT_REQUEST':
       return state;
     case 'ADD_WORKOUT_SUCCESS':
       return [
         ...state,
-        action.workout
+        action.workout,
       ];
     case 'FETCH_WORKOUTS_REQUEST':
       return state;
@@ -160,16 +152,16 @@ function workouts (state = [], action) {
     case 'DELETE_WORKOUT_SUCCESS':
       return [
         ...state.slice(0, action.workoutIndex),
-        ...state.slice(action.workoutIndex + 1)
+        ...state.slice(action.workoutIndex + 1),
       ];
     default:
       return state;
   }
-};
+}
 
 const FitnessApp = combineReducers({
   workouts,
-  exercises
+  exercises,
 });
 
 export default FitnessApp;
